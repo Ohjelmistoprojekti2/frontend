@@ -1,28 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer} from '@react-navigation/native';
+import { createStackNavigator} from'@react-navigation/stack';
+import Mainpage from './pages/Mainpage';
 
 export default function App() {
 
-const [tags, setTags] = React.useState('');
+  const Stack = createStackNavigator();
 
 
   return (
-    <View style={styles.container}>
-      <Text>Tähän tulee Vhattodo-botti!</Text>
-      <TextInput style={{fontSize: 18, width: 200, borderColor: 'gray', borderWidth: 1}}
-      value={tags}>
-      </TextInput>
-      <StatusBar style="auto" />
-    </View>
+    
+      <NavigationContainer>
+      <Stack.Navigator>
+      <Stack.Screen name="Mainpage" component={Mainpage} />
+        <Stack.Screen name="Activities" component={Activities} />
+      </Stack.Navigator>
+      </NavigationContainer>
+   
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
