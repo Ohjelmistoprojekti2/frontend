@@ -1,5 +1,6 @@
 import React, {useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Alert, Flatlist } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
 
 export default function Mainpage( { navigation }) {
@@ -7,6 +8,8 @@ export default function Mainpage( { navigation }) {
   const [tags, setTags] = useState('');
   const [activities, setActivities] = useState([]);
   const [allTags, setAllTags] = useState([]);
+  const [osoite, setOsoite] = React.useState('');
+
 
 //Haetaan lista aktiviteeteista ja tagseista
 
@@ -26,6 +29,14 @@ export default function Mainpage( { navigation }) {
     })
   }
 
+  //Hakee apista kartan
+  const getOsoite = () => {
+    fetch('http://www.mapquestapi.com/geocoding/v1/address?key=RGx0aXHHuyCCnCZA30GjP9laK2mzcHUp&location=')
+    .then(response => response.json())
+    .then(data => setOsoite(data.locations))
+    .catch(err => console.error(err))
+  }
+
   const listSeparator = () => {
     return (
       <View
@@ -39,7 +50,7 @@ export default function Mainpage( { navigation }) {
   };
 
   return (
-    
+
     <View style={styles.container}>
 
       <TextInput
@@ -49,17 +60,34 @@ export default function Mainpage( { navigation }) {
       onChangeText={(tags) => setTags(tags)} />
       <Button title="Find activities" onPress={getActivities} />
 
-      <Flatlist 
+      <Flatlist
       style={{marginLeft: "5%"}}
       keyExtractor={item => item.id}
       renderItem={({item}) => <Text>{item.name.fi}</Text>}
       ItemSeparatorComponent={listSeparator} data={activities} />
-      
+
      <Text>This is mainpage</Text>
      <Button title="Activities" onPress={() => navigation.navigate('Activities')}/>
+
+     //Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen
+    <MapView
+        style={styles.map}
+        region={{
+          latitude: 60.167389,
+          longitude: 24.931080,
+          latitudeDelta: 0.0322,
+          longitudeDelta: 0.0221
+        }}>
+
+      <Marker
+        coordinate={{
+          latitude: 60.167389,
+          longitude: 24.931080 }}
+          title='Kamppi' />
+      </MapView>
+
+
      </View>
-     
-   
   );
 }
 
@@ -80,5 +108,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         padding: 20,
       },
+    map: {
+      height: '25%',
+      width: '90%',
+      marginTop: '130%',
+      marginLeft: '5%',
+    }
     });
-  
