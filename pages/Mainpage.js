@@ -1,117 +1,139 @@
-import React, {useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Alert, Flatlist } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, Alert, FlatList, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 
 
-export default function Mainpage( { navigation }) {
+export default function Mainpage({ navigation }) {
 
   const [tags, setTags] = useState('');
   const [activities, setActivities] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [osoite, setOsoite] = React.useState('');
+  const testlista = [{first:"eka",second:"toka",third:"kola"}];
 
-
-//Haetaan lista aktiviteeteista ja tagseista
+  //Haetaan lista aktiviteeteista ja tagseista
 
   useEffect(() => {
     getActivities()
-  },[]);
-
+  }, []);
+//tags_search=${tags}& siirsin pois näin aluksi, use effectin haku ei tuota listaa tämän kanssa.
   const getActivities = () => {
-    fetch(`http://open-api.myhelsinki.fi/v1/activities/?tags_search=${tags}&language_filter=fi&limit=20`)
-    .then(response => response.json())
-    .then(data => {
-      setActivities(data.data);
-      setAllTags(data.tags);
-    })
-    .catch((error) => {
-      Alert.alert('Something went wrong', error);
-    })
+    fetch(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
+      .then(response => response.json())
+      .then(data => {
+        setActivities(data.data);
+        setAllTags(data.tags);
+      })
+      .catch((error) => {
+        Alert.alert('Something went wrong', error);
+      })
   }
 
   //Hakee apista kartan
   const getOsoite = () => {
     fetch('http://www.mapquestapi.com/geocoding/v1/address?key=RGx0aXHHuyCCnCZA30GjP9laK2mzcHUp&location=')
-    .then(response => response.json())
-    .then(data => setOsoite(data.locations))
-    .catch(err => console.error(err))
+      .then(response => response.json())
+      .then(data => setOsoite(data.locations))
+      .catch(err => console.error(err))
   }
 
-  const listSeparator = () => {
-    return (
-      <View
-      style={{
-        height: 1,
-        width: "90%",
-        backgroundColor: "#CFD20CF"
-      }}
-      />
-    );
-  };
-
+    const listSeparator = () => {
+        return (
+            <View style={{
+                height: 1,
+                width: "90%",
+                backgroundColor: "#CED0CE",
+                marginLeft: "10%"
+            }}
+            />
+        )
+    }
+  //Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen //Siirsin pois returnista // ei toimi kommenttina siel
   return (
 
-    <View style={styles.container}>
+    <View style={styles.mainContainer}>
 
-      <TextInput
-      style={{fontSize: 18, width: 150}}
-      value={tags}
-      placeholder="Write tags"
-      onChangeText={(tags) => setTags(tags)} />
-      <Button title="Find activities" onPress={getActivities} />
+      <View style={styles.container} >
+        <TextInput
+          style={styles.inputs}
+          value={tags}
+          placeholder="Write tags"
+          onChangeText={(tags) => setTags(tags)} />
+        <Button title="Find activities" onPress={getActivities} />
+        <Text>This is mainpage</Text>
+        <Button title="Activities" onPress={() => navigation.navigate('Activities')} />
+      </View>
 
-      <Flatlist
+    <View style={styles.listcontainer}>
+    <FlatList
       style={{marginLeft: "5%"}}
       keyExtractor={item => item.id}
       renderItem={({item}) => <Text>{item.name.fi}</Text>}
       ItemSeparatorComponent={listSeparator} data={activities} />
+    </View>
 
-     <Text>This is mainpage</Text>
-     <Button title="Activities" onPress={() => navigation.navigate('Activities')}/>
+      <View style={styles.mapcontainer} >
+        <MapView
+          style={styles.map}
+          region={{
+            latitude: 60.167389,
+            longitude: 24.931080,
+            latitudeDelta: 0.0322,
+            longitudeDelta: 0.0221
+          }}>
 
-     //Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen
-    <MapView
-        style={styles.map}
-        region={{
-          latitude: 60.167389,
-          longitude: 24.931080,
-          latitudeDelta: 0.0322,
-          longitudeDelta: 0.0221
-        }}>
-
-      <Marker
-        coordinate={{
-          latitude: 60.167389,
-          longitude: 24.931080 }}
-          title='Kamppi' />
-      </MapView>
-
-
-     </View>
+          <Marker
+            coordinate={{
+              latitude: 60.167389,
+              longitude: 24.931080
+            }}
+            title='Kamppi' />
+        </MapView>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-    },
+  mainContainer: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFF',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: 10,
+  },
+  mapcontainer: {
+    flex: 1,
+    padding: 10,
+  },
+  listcontainer: {
+    flex: 3,
+    padding: 10,
+  },
 
-    buttoncontainer: {
-        flex: 2,
-        width: 150,
-        flexDirection: 'row',
-        backgroundColor: '#fff',
-        alignItems: 'flex-start',
-        justifyContent: 'space-around',
-        padding: 20,
-      },
-    map: {
-      height: '25%',
-      width: '90%',
-      marginTop: '130%',
-      marginLeft: '5%',
-    }
-    });
+  buttoncontainer: {
+    flex: 2,
+    width: 150,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    alignItems: 'flex-start',
+    justifyContent: 'space-around',
+    padding: 20,
+  },
+  inputs: {
+    width: 200,
+    borderWidth: 1,
+    borderColor: 'black',
+    padding: 5,
+    margin: 1,
+},
+  map: {
+    flex: 1,
+    height: "100%",
+    width: "100%",
+  }
+});
