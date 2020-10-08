@@ -15,10 +15,10 @@ export default function Mainpage({ navigation }) {
   //Haetaan lista aktiviteeteista ja tagseista
 
   useEffect(() => {
-    getActivities()
+    defaultList()
   }, []);
-//tags_search=${tags}& siirsin pois näin aluksi, use effectin haku ei tuota listaa tämän kanssa.
-  const getActivities = () => {
+
+const defaultList = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
       .then(response => response.json())
       .then(data => {
@@ -27,7 +27,23 @@ export default function Mainpage({ navigation }) {
       })
       .catch((error) => {
         Alert.alert('Something went wrong', error);
+  })
+} 
+
+// siirsin pois näin aluksi, use effectin haku ei tuota listaa tämän kanssa.
+const getActivities = () => {
+    fetch(`http://open-api.myhelsinki.fi/v1/activities/?tags_search=${tags}&language_filter=fi&limit=20`)
+      .then(response => response.json())
+      .then(data => {
+        setActivities(data.data);
+        setAllTags(data.tags);
       })
+      .catch((error) => {
+        Alert.alert('Something went wrong', error);
+      })
+      if (activities == null) {
+        defaultList()
+      }
   }
 
   //Hakee apista kartan
@@ -61,8 +77,6 @@ export default function Mainpage({ navigation }) {
           placeholder="Write tags"
           onChangeText={(tags) => setTags(tags)} />
         <Button title="Find activities" onPress={getActivities} />
-        <Text>This is mainpage</Text>
-        <Button title="Activities" onPress={() => navigation.navigate('Activities')} />
       </View>
 
     <View style={styles.listcontainer}>
