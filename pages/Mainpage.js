@@ -10,7 +10,6 @@ export default function Mainpage({ navigation }) {
   const [activities, setActivities] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [osoite, setOsoite] = React.useState('');
-  const testlista = [{first:"eka",second:"toka",third:"kola"}];
 
   //Haetaan lista aktiviteeteista ja tagseista
 
