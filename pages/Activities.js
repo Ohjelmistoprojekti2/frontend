@@ -1,21 +1,22 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 
 
-export default function Activities( { navigation }) {
+export default function Activities({ route, navigation }) {
 
 
   return (
-    
+
     <View style={styles.container}>
 
-  
+
      <Text>
          This is Activities page
      </Text>
      <Button title="Mainpage" onPress={() => navigation.navigate('Mainpage')}/>
      </View>
-   
+
   );
 }
 
@@ -37,4 +38,3 @@ const styles = StyleSheet.create({
         padding: 20,
       },
     });
-  

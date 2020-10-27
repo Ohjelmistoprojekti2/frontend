@@ -10,13 +10,13 @@ export default function App() {
 
 
   return (
-    
-      <NavigationContainer>
-      <Stack.Navigator>
-      <Stack.Screen name="Mainpage" component={Mainpage} />
-        <Stack.Screen name="Activities" component={Activities} />
-      </Stack.Navigator>
-      </NavigationContainer>
-   
+
+    <NavigationContainer>
+        <Tab.Navigator>
+        <Tab.Screen name="Main" component={Mainpage} />
+        <Tab.Screen name="Advanced search" component={AdvancedSearch} />
+        </Tab.Navigator>
+    </NavigationContainer>
+
   );
 }

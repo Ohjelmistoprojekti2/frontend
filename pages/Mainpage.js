@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Alert, FlatList, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
+//import { NavigationContainer } from '@react-navigation/native’;   EI TOIMI JOSTAIN SYYSTÄ
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Activities from'./Activities';
 
 
-export default function Mainpage({ navigation }) {
+
+export default function Mainpage({ route,  navigation }) {
 
   const [tags, setTags] = useState('');
   const [activities, setActivities] = useState([]);
@@ -27,7 +31,7 @@ const defaultList = () => {
       .catch((error) => {
         Alert.alert('Something went wrong', error);
   })
-} 
+}
 
 // siirsin pois näin aluksi, use effectin haku ei tuota listaa tämän kanssa.
 const getActivities = () => {
@@ -64,11 +68,14 @@ const getActivities = () => {
             />
         )
     }
+
+    const Tab = createBottomTabNavigator();
+
+
   //Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen //Siirsin pois returnista // ei toimi kommenttina siel
   return (
 
     <View style={styles.mainContainer}>
-
       <View style={styles.container} >
         <TextInput
           style={styles.inputs}
@@ -104,6 +111,14 @@ const getActivities = () => {
             title='Kamppi' />
         </MapView>
       </View>
+
+    <NavigationContainer>
+        <Tab.Navigator>
+        <Tab.Screen name="Main" component={Mainpage} />
+        <Tab.Screen name="Advanced search" component={AdvancedSearch} />
+        </Tab.Navigator>
+    </NavigationContainer>
+
     </View>
   );
 }
