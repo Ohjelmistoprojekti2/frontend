@@ -1,20 +1,22 @@
 import React from 'react';
+import { Text, View } from 'react-native';
 import { NavigationContainer} from '@react-navigation/native';
-import { createStackNavigator} from'@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Mainpage from './pages/Mainpage';
 import Activities from'./pages/Activities';
+import AdvancedSearch from'./pages/AdvancedSearch';
+
+const Tab = createBottomTabNavigator();
+
 
 export default function App() {
-
-  const Stack = createStackNavigator();
-
-
   return (
 
     <NavigationContainer>
         <Tab.Navigator>
         <Tab.Screen name="Main" component={Mainpage} />
-        <Tab.Screen name="Advanced search" component={AdvancedSearch} />
+        <Tab.Screen name="Activities" component={Activities} />
+        <Tab.Screen name="Advanced Search" component={AdvancedSearch} />
         </Tab.Navigator>
     </NavigationContainer>
 

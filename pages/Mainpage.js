@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Alert, FlatList, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
-//import { NavigationContainer } from '@react-navigation/native’;   EI TOIMI JOSTAIN SYYSTÄ
+import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Activities from'./Activities';
 
@@ -111,15 +111,8 @@ const getActivities = () => {
             title='Kamppi' />
         </MapView>
       </View>
-
-    <NavigationContainer>
-        <Tab.Navigator>
-        <Tab.Screen name="Main" component={Mainpage} />
-        <Tab.Screen name="Advanced search" component={AdvancedSearch} />
-        </Tab.Navigator>
-    </NavigationContainer>
-
     </View>
+
   );
 }
 

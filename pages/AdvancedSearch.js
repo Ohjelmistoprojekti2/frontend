@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
 
-export default function Activities({ route, navigation }) {
+export default function AdvancedSearch({ route, navigation }) {
 
 
   return (
@@ -12,7 +12,7 @@ export default function Activities({ route, navigation }) {
 
 
      <Text>
-         This is Activities page
+         This is AdvancedSearch page
      </Text>
      </View>
 
