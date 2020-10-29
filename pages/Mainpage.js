@@ -9,14 +9,16 @@ export default function Mainpage({ navigation }) {
   const [tags, setTags] = useState('');
   const [activities, setActivities] = useState([]);
   const [allTags, setAllTags] = useState([]);
-  const [osoite, setOsoite] = React.useState('');
+  const [osoite, setOsoite] = useState('');
+  const [note, setNote] = useState('Default lista');
 
-  //Haetaan lista aktiviteeteista ja tagseista
-
+  
+//Haetaan lista aktiviteeteista ja tagseista
   useEffect(() => {
     defaultList()
   }, []);
 
+//default haku
 const defaultList = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
       .then(response => response.json())
@@ -29,20 +31,25 @@ const defaultList = () => {
   })
 } 
 
-// siirsin pois näin aluksi, use effectin haku ei tuota listaa tämän kanssa.
+//haetaan lista käyttäjän tägeillä, palautetaan default lista jos uusi lista on tyhjä
 const getActivities = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/?tags_search=${tags}&language_filter=fi&limit=20`)
       .then(response => response.json())
       .then(data => {
+        if (data.data.length > 0){
         setActivities(data.data);
         setAllTags(data.tags);
+        setNote('Tässä hakemasi aktiviteetit');}
+        
+        else {
+          defaultList();
+          setNote('Haulla tuli tyhjä lista, tässä default lista.')
+        }
       })
       .catch((error) => {
         Alert.alert('Something went wrong', error);
       })
-      if (activities == null) {
-        defaultList()
-      }
+     
   }
 
   //Hakee apista kartan
@@ -64,7 +71,6 @@ const getActivities = () => {
             />
         )
     }
-  //Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen //Siirsin pois returnista // ei toimi kommenttina siel
   return (
 
     <View style={styles.mainContainer}>
@@ -79,13 +85,14 @@ const getActivities = () => {
       </View>
 
     <View style={styles.listcontainer}>
+      <Text style={{textAlign: 'center', fontSize:15, padding: 5, fontWeight:'bold' }}>{note}</Text>
     <FlatList
       style={{marginLeft: "5%"}}
       keyExtractor={item => item.id}
       renderItem={({item}) => <Text>{item.name.fi}</Text>}
       ItemSeparatorComponent={listSeparator} data={activities} />
     </View>
-
+{/*Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen*/}
       <View style={styles.mapcontainer} >
         <MapView
           style={styles.map}
