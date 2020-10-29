@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Alert, FlatList, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Alert, FlatList, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Activities from'./Activities';
+import { Header, ListItem, Input, Button } from 'react-native-elements';
 
 
+//npm install react-native-elements
 
 export default function Mainpage({ route,  navigation }) {
 
   const [tags, setTags] = useState('');
   const [activities, setActivities] = useState([]);
   const [allTags, setAllTags] = useState([]);
-  const [osoite, setOsoite] = React.useState('');
+  const [osoite, setOsoite] = useState('');
+  const [note, setNote] = useState('Default lista');
 
-  //Haetaan lista aktiviteeteista ja tagseista
 
+//Haetaan lista aktiviteeteista ja tagseista
   useEffect(() => {
     defaultList()
   }, []);
 
+//default haku
 const defaultList = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
       .then(response => response.json())
@@ -33,20 +37,25 @@ const defaultList = () => {
   })
 }
 
-// siirsin pois näin aluksi, use effectin haku ei tuota listaa tämän kanssa.
+//haetaan lista käyttäjän tägeillä, palautetaan default lista jos uusi lista on tyhjä
 const getActivities = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/?tags_search=${tags}&language_filter=fi&limit=20`)
       .then(response => response.json())
       .then(data => {
+        if (data.data.length > 0){
         setActivities(data.data);
         setAllTags(data.tags);
+        setNote('Tässä hakemasi aktiviteetit');}
+
+        else {
+          defaultList();
+          setNote('Haulla tuli tyhjä lista, tässä default lista.')
+        }
       })
       .catch((error) => {
         Alert.alert('Something went wrong', error);
       })
-      if (activities == null) {
-        defaultList()
-      }
+
   }
 
   //Hakee apista kartan
@@ -68,31 +77,36 @@ const getActivities = () => {
             />
         )
     }
-
-    const Tab = createBottomTabNavigator();
-
-
-  //Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen //Siirsin pois returnista // ei toimi kommenttina siel
   return (
 
     <View style={styles.mainContainer}>
+
       <View style={styles.container} >
-        <TextInput
+        <Input
           style={styles.inputs}
           value={tags}
           placeholder="Write tags"
           onChangeText={(tags) => setTags(tags)} />
-        <Button title="Find activities" onPress={getActivities} />
+        <Button type="outline" raised="boolean" title="Find activities" onPress={getActivities} />
       </View>
 
     <View style={styles.listcontainer}>
+      <Text style={{textAlign: 'center', fontSize:15, padding: 5, fontWeight:'bold' }}>{note}</Text>
     <FlatList
-      style={{marginLeft: "5%"}}
+      style={{marginLeft: "0%"}}
       keyExtractor={item => item.id}
-      renderItem={({item}) => <Text>{item.name.fi}</Text>}
+      renderItem={({ item }) => (
+            <ListItem bottomDivider>
+              <ListItem.Content>
+                <ListItem.Title>{item.name.fi}</ListItem.Title>
+                </ListItem.Content>
+                <ListItem.Chevron  />
+            </ListItem>
+          )}
       ItemSeparatorComponent={listSeparator} data={activities} />
     </View>
 
+{/*Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen*/}
       <View style={styles.mapcontainer} >
         <MapView
           style={styles.map}
@@ -112,7 +126,6 @@ const getActivities = () => {
         </MapView>
       </View>
     </View>
-
   );
 }
 
@@ -126,6 +139,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 10,
+    marginTop: 3
   },
   mapcontainer: {
     flex: 1,
@@ -134,6 +148,7 @@ const styles = StyleSheet.create({
   listcontainer: {
     flex: 3,
     padding: 10,
+    backgroundColor: '#f9f8f8'
   },
 
   buttoncontainer: {
@@ -147,7 +162,7 @@ const styles = StyleSheet.create({
   },
   inputs: {
     width: 200,
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: 'black',
     padding: 5,
     margin: 1,
