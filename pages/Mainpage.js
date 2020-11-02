@@ -5,7 +5,7 @@ import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStac
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Activities from'./Activities';
-import { Header, ListItem, Input, Button } from 'react-native-elements';
+import { Header, ListItem, Input, Button, Tooltip } from 'react-native-elements';
 
 
 //npm install react-native-elements
@@ -81,27 +81,30 @@ const getActivities = () => {
 
     <View style={styles.mainContainer}>
 
+
       <View style={styles.container} >
         <Input
           style={styles.inputs}
           value={tags}
           placeholder="Write tags"
           onChangeText={(tags) => setTags(tags)} />
-        <Button type="outline" raised="boolean" title="Find activities" onPress={getActivities} />
+        <Button type="outline" title="Find activities" onPress={getActivities} />
       </View>
 
     <View style={styles.listcontainer}>
       <Text style={{textAlign: 'center', fontSize:15, padding: 5, fontWeight:'bold' }}>{note}</Text>
     <FlatList
-      style={{marginLeft: "0%"}}
+      style={{marginLeft: "0%", height:150}}
       keyExtractor={item => item.id}
       renderItem={({ item }) => (
             <ListItem bottomDivider>
               <ListItem.Content>
-                <ListItem.Title>{item.name.fi}</ListItem.Title>
+                <Tooltip popover={<Text>{item.location.address.street_address}</Text>}>
+                  <Text>{item.name.fi}</Text>
+                </Tooltip>
                 </ListItem.Content>
                 <ListItem.Chevron  />
-            </ListItem>
+              </ListItem>
           )}
       ItemSeparatorComponent={listSeparator} data={activities} />
     </View>
@@ -132,6 +135,7 @@ const getActivities = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor: '#FFFFFF'
   },
   container: {
     flex: 1,
@@ -139,7 +143,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 10,
-    marginTop: 3
+    marginTop: 55
   },
   mapcontainer: {
     flex: 1,
