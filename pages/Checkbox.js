@@ -10,8 +10,8 @@ export default class App extends React.Component {
     selectedTag2:false,
     selectedTag3:false,
     selectedTag4:false,
-
   }
+
   render(){
     const {selectedTag1,selectedTag2,selectedTag3,selectedTag4} = this.state
     return (
@@ -56,12 +56,9 @@ export default class App extends React.Component {
         <TouchableOpacity style={styles.submit}>
           <Text style={{color:"white"}}>SUBMIT</Text>
         </TouchableOpacity>
-  
-  
       </View>
     );
   }
-  
 }
 
 const styles = StyleSheet.create({

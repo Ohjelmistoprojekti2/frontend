@@ -51,7 +51,7 @@ const getActivities = () => {
       })
      
   }
-
+  
   //Hakee apista kartan
   const getOsoite = () => {
     fetch('http://www.mapquestapi.com/geocoding/v1/address?key=RGx0aXHHuyCCnCZA30GjP9laK2mzcHUp&location=')
