@@ -1,22 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, Alert, RecyclerViewBackedScrollViewComponent } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 
-
+/** ToDoList
+ * MIKSI CHECKBOXIA EI VOI UNCHECKATA
+ * Mitä kaikkea voi refaktoroida erillisiksi elementeiksi?
+ * Tyylit omaan tiedostoon ja funktiot?
+ * 
+ */
 export default function Fiddlin({ navigation }) {
-
+    
     const [allTags, setAllTags] = useState([]);
     const [activities, setActivities] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
-
+    const [fetchString, setFetchString] = useState('');
+    const [url, setUrl] = useState(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
+ 
+  let array = Object.values(allTags)
     //Haetaan lista aktiviteeteista ja tagseista
     useEffect(() => {
         defaultList()
     }, []);
+    getActsWithTags = () => {
 
+        let lista = ('?tags_search=');
+       // jeb = jeb.concat(url);
+            for (let i = 0; i < selectedTags.length; i++){
+                if (selectedTags[i+1]){
+                lista = lista.concat(selectedTags[i] + "%2C%20")
+            }   else {
+                lista=lista.concat(selectedTags[i] + '&')
+            }
+            setFetchString(lista)
+        }
+    }
+const uusiHaku = () => {
+    fetch(`http://open-api.myhelsinki.fi/v1/activities/${fetchString}language_filter=fi&limit=20`)
+    .then(response => response.json())
+    .then(data => {
+        setActivities(data.data);
+        setAllTags(data.tags);
+    })
+    .catch((error) => {
+        Alert.alert('Something went wrong', error);
+    })
+}
     //default haku
     const defaultList = () => {
-        fetch(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 setActivities(data.data);
@@ -27,9 +58,8 @@ export default function Fiddlin({ navigation }) {
             })
     }
 
-//muutetaan olio lista arrayksi
-    const array = Object.values(allTags);
 
+//Voisimme siirtyä React elements listaan
     const listSeparator = () => {
         return (
             <View style={{
@@ -42,26 +72,23 @@ export default function Fiddlin({ navigation }) {
         )
     }
 
-//olio lista tägien käyttöön
-    const [CB, setCB] = useState([{arvo: "", buulean: (false)}])
-
-//Community checkbox elementti
-    const [toggleCheckBox, setToggleCheckBox] = useState(false)
-
-//funktio muuttaa perus lista olioksi
-    const check = (item) => {
-  for (var i = 0; array.length > i; i++){
-        setCB({arvo:array[i], boolean:(false)})
-    }
-    }
-
+//Tarkoitus käyttää useammassa listassa, onko mahdollista? Pitäisikö renderitemit siirtää?
     const renderItem = ({ item }) => (
         <View style={{ flexDirection: 'row' }}>
             <Text>{item}</Text>
             <CheckBox
                 disabled={false}
-                value={toggleCheckBox}
-                onValueChange={(newValue) => setToggleCheckBox(newValue)}
+                value={
+                    selectedTags.indexOf(item) >= 0
+                }
+                onValueChange={(newValue) => {
+                    
+                    if (newValue === true) {
+                        setSelectedTags([...selectedTags, item])
+                    } else if (newValue === false) {
+                        setSelectedTags(selectedTags.filter((current)=> current !== item))
+                    }
+                }}
             />
 
         </View>
@@ -69,13 +96,16 @@ export default function Fiddlin({ navigation }) {
     return (
 
         <View style={styles.screen}>
-<View style={styles.smallcontainer}>
-    {/**lista johon tulee checkatut tägit */}
-       <FlatList data={array}
-           keyExtractor={(item, index) => index.toString()}
-           ItemSeparatorComponent={listSeparator}
-           renderItem={renderItem} />
-   </View>  
+            <View style={styles.smallcontainer}>
+                <Text>{fetchString}</Text>
+                <Button title="GetItMf" onPress={uusiHaku} />
+                {/**lista johon tulee checkatut tägit */}
+                <Text style={styles.basicTexts}>Chosen Tags</Text>
+                <FlatList data={selectedTags}
+                    keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={listSeparator}
+                    renderItem={({ item }) => <Text>{item}</Text>} />
+            </View>
             <View style={styles.smallcontainer}>
                 <FlatList
                     data={activities}
@@ -83,9 +113,10 @@ export default function Fiddlin({ navigation }) {
                     renderItem={({ item }) => <Text>{item.name.fi}</Text>}
                     ItemSeparatorComponent={listSeparator} style={{ marginLeft: "5%" }} />
             </View>
-         
+
             <View style={styles.smallcontainer}>
                 {/**lista josta voi checkata tägejä */}
+                <Button title='GetActsWithTags' onPress={getActsWithTags}/>
                 <FlatList data={array}
                     keyExtractor={(item, index) => index.toString()}
                     ItemSeparatorComponent={listSeparator}
@@ -96,7 +127,8 @@ export default function Fiddlin({ navigation }) {
 
     );
 }
-/**     
+/** 
+ * Siirretään tyylit omaan tiedostoon    
 */
 const styles = StyleSheet.create({
     //Main screen
@@ -183,6 +215,6 @@ const styles = StyleSheet.create({
     },
     basicTexts: {
         fontSize: 18,
-        alignSelf: 'flex-start'
+        alignSelf: 'center'
     }
 });

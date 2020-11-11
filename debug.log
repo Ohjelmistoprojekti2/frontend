@@ -1,3 +1,6 @@
 [0907/121704.627:ERROR:crash_report_database_win.cc(428)] unexpected header
 [1006/144125.831:ERROR:crash_report_database_win.cc(428)] unexpected header
 [1106/145237.507:ERROR:directory_reader_win.cc(43)] FindFirstFile: Määritettyä polkua ei löydy. (0x3)
+[1109/095024.357:ERROR:directory_reader_win.cc(43)] FindFirstFile: Määritettyä polkua ei löydy. (0x3)
+[1110/095021.409:ERROR:directory_reader_win.cc(43)] FindFirstFile: Määritettyä polkua ei löydy. (0x3)
+[1111/095021.423:ERROR:directory_reader_win.cc(43)] FindFirstFile: Määritettyä polkua ei löydy. (0x3)
