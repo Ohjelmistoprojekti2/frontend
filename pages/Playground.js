@@ -7,6 +7,12 @@ import CheckBox from '@react-native-community/checkbox';
  * Mitä kaikkea voi refaktoroida erillisiksi elementeiksi?
  * Tyylit omaan tiedostoon ja funktiot?
  * 
+ * Notes: Jos hakee useampaa tägiä, myhelsinki api palauttaa vain ensimmäisen tägin löydöt
+ * Returns items with ANY of the tags listed. Separate tags with a comma.
+ * ?tags_search=sauna%2C%20bar palauttaa listan jossa on vain sauna aktiviteetteja
+ * 
+ * Notes: Jos yrittää hakea aktiviteettia joka sisältää useamman tägin
+ * ?tags_filter= Ei helsinkiApi palauta yhtään tulosta.
  */
 export default function Fiddlin({ navigation }) {
     
@@ -21,19 +27,23 @@ export default function Fiddlin({ navigation }) {
     useEffect(() => {
         defaultList()
     }, []);
-    getActsWithTags = () => {
+   const getActsWithTags = () => {
 
-        let lista = ('?tags_search=');
+        let str = ('?tags_search=');
        // jeb = jeb.concat(url);
             for (let i = 0; i < selectedTags.length; i++){
+                // if (selectedTags[i] has ' ' or '&') {replace.(' ' = '%20), replace.('&' = '%26%')}
+                selectedTags[i] = selectedTags[i].replace("&", "%26")
                 if (selectedTags[i+1]){
-                lista = lista.concat(selectedTags[i] + "%2C%20")
+                str = str.concat(selectedTags[i] + "%2C%20")
             }   else {
-                lista=lista.concat(selectedTags[i] + '&')
+                str=str.concat(selectedTags[i]+'&')
             }
-            setFetchString(lista)
+            //
+            setFetchString(str)
         }
     }
+
 const uusiHaku = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/${fetchString}language_filter=fi&limit=20`)
     .then(response => response.json())
