@@ -3,9 +3,11 @@ import { StyleSheet, Text, View, Button, FlatList, Alert, RecyclerViewBackedScro
 import CheckBox from '@react-native-community/checkbox';
 
 /** ToDoList
- * MIKSI CHECKBOXIA EI VOI UNCHECKATA
+ * DONE: MIKSI CHECKBOXIA EI VOI UNCHECKATA
  * Mitä kaikkea voi refaktoroida erillisiksi elementeiksi?
  * Tyylit omaan tiedostoon ja funktiot?
+ * Voidaanko yhdistää funktioita? yksi urli ja yksi muuttuva haku?
+ * Sama ilman buttoneita, miten? Epäilen async await toiminnolla.
  * 
  * Notes: Jos hakee useampaa tägiä, myhelsinki api palauttaa vain ensimmäisen tägin löydöt
  * Returns items with ANY of the tags listed. Separate tags with a comma.
@@ -18,32 +20,38 @@ export default function Fiddlin({ navigation }) {
     
     const [allTags, setAllTags] = useState([]);
     const [activities, setActivities] = useState([]);
+    //Lista valituista tägeistä
     const [selectedTags, setSelectedTags] = useState([]);
+    //String state jonka voi laittaa urlin sisään
     const [fetchString, setFetchString] = useState('');
+    //Voisiko olla let url = `http://open-api.myhelsinki.fi/v1/activities/?{tägit}language_filter=fi&limit=20`
+    //{tägit} täytyy olla tyhjä ennen käyttäjän hakua ja sen jälkeen sisältää:'tags_search=' alussa ja '&' merkki lopussa
     const [url, setUrl] = useState(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
  
-  let array = Object.values(allTags)
     //Haetaan lista aktiviteeteista ja tagseista
+  let array = Object.values(allTags)
+
     useEffect(() => {
         defaultList()
     }, []);
    const getActsWithTags = () => {
 
         let str = ('?tags_search=');
-       // jeb = jeb.concat(url);
+       // Käydään läpi valitut tägit ja tehdään niistä urliin sopiva stringi
             for (let i = 0; i < selectedTags.length; i++){
-                // if (selectedTags[i] has ' ' or '&') {replace.(' ' = '%20), replace.('&' = '%26%')}
+                //Yhden tägin & merkki rikkoi haun, joten tarkistetaan onko tägillä sitä merkkiä ja korvataan
                 selectedTags[i] = selectedTags[i].replace("&", "%26")
                 if (selectedTags[i+1]){
+                    //Jos tägin jälkeen on tägi
                 str = str.concat(selectedTags[i] + "%2C%20")
             }   else {
+                //jos on viimeinen tägi
                 str=str.concat(selectedTags[i]+'&')
             }
-            //
             setFetchString(str)
         }
     }
-
+//Haku jolla haetaan tägit
 const uusiHaku = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/${fetchString}language_filter=fi&limit=20`)
     .then(response => response.json())
@@ -92,9 +100,10 @@ const uusiHaku = () => {
                     selectedTags.indexOf(item) >= 0
                 }
                 onValueChange={(newValue) => {
-                    
+                    //jos oncheck value on true, lisää listaan
                     if (newValue === true) {
                         setSelectedTags([...selectedTags, item])
+                        //jos ei, poista listasta, tämän voisi muuttaa ehkä muotoon else{}
                     } else if (newValue === false) {
                         setSelectedTags(selectedTags.filter((current)=> current !== item))
                     }
@@ -107,6 +116,7 @@ const uusiHaku = () => {
 
         <View style={styles.screen}>
             <View style={styles.smallcontainer}>
+                {/**testi elementti alapuoella */}
                 <Text>{fetchString}</Text>
                 <Button title="GetItMf" onPress={uusiHaku} />
                 {/**lista johon tulee checkatut tägit */}
