@@ -1,107 +1,139 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState, Component } from 'react';
-import {StyleSheet, View, Text, } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, FlatList, Alert, RecyclerViewBackedScrollViewComponent } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 
-//expo/npm install react-native-multiple-tags
-export default function Activities() {
+export default function Fiddlin({ navigation }) {
+    
+    const [allTags, setAllTags] = useState([]);
+    const [activities, setActivities] = useState([]);
+    //Lista valituista tägeistä
+    const [selectedTags, setSelectedTags] = useState([]);
+    //String state jonka voi laittaa urlin sisään
+    const [fetchString, setFetchString] = useState('');
+    const [url, setUrl] = useState(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
+ 
+    //Haetaan lista aktiviteeteista ja tagseista
+  let array = Object.values(allTags)
 
-    const [content, setContent] = useState([]);
-    const [contentx, setContentx] = useState([]);
-  
-const tags = [
-    'cherry',
-    'mango',
-    'cashew',
-    'almond',
-    'guava',
-    'pineapple',
-    'orange',
-    'pear',
-    'date',
-    'strawberry',
-    'pawpaw',
-    'banana',
-    'apple',
-    'grape',
-    'lemon',
-  ];
-  
-  const objectTags = [
-    {
-      key: 'id_01',
-      value: 'cherry',
-    },
-    {
-      key: 'id_02',
-      value: 'mango',
-    },
-    {
-      key: 'id_03',
-      value: 'cashew',
-    },
-    {
-      key: 'id_04',
-      value: 'almond'
-    },
-    {
-      key: 'id_05',
-      value: 'guava'
-    },
-    {
-      key: 'id_06',
-      value: 'pineapple'
-    },
-    {
-      key: 'id_07',
-      value: 'orange'
-    },
-    {
-      key: 'id_08',
-      value: 'pear'
-    },
-    {
-      key: 'id_09',
-      value: 'date'
-    }
-  ]
+    useEffect(() => {
+        defaultList()
+    }, []);
+   const getActsWithTags = () => {
 
-  /* 
-  Component.constructor(props) {
-    super(props);
-    this.state = {
-      content: [],
-      contentx: [],
-    };
-  }; 
-  */
-
-    return (
-        <View style={styles.screen}>
-            <StatusBar hidden={true} />
-            <View>
-        <MultipleTags
-            tags={objectTags}
-            search
-            onChangeItem={(content) => { setContent({ content }); }}
-            title="Fruits"
-          />
-          {
-          (() => content.map(item => <Text key={item.key}> {item.key}: {item.value} </Text>))()
-          }
-        <MultipleTags
-          tags={tags}
-          search
-          onChangeItem={(contentx) => { setContentx({ contentx }); }}
-          title="Fruits"
-        />
-        {
-        (() => contentx.map(item => <Text key={item}> {item} </Text>) )()
+        let str = ('?tags_search=');
+       // Käydään läpi valitut tägit ja tehdään niistä urliin sopiva stringi
+            for (let i = 0; i < selectedTags.length; i++){
+                //Yhden tägin & merkki rikkoi haun, joten tarkistetaan onko tägillä sitä merkkiä ja korvataan
+                selectedTags[i] = selectedTags[i].replace("&", "%26")
+                if (selectedTags[i+1]){
+                    //Jos tägin jälkeen on tägi
+                str = str.concat(selectedTags[i] + "%2C%20")
+            }   else {
+                //jos on viimeinen tägi
+                str=str.concat(selectedTags[i]+'&')
+            }
+            setFetchString(str)
         }
-      </View>
+    }
+//Haku jolla haetaan tägit
+const uusiHaku = () => {
+    fetch(`http://open-api.myhelsinki.fi/v1/activities/${fetchString}language_filter=fi&limit=20`)
+    .then(response => response.json())
+    .then(data => {
+        setActivities(data.data);
+        setAllTags(data.tags);
+    })
+    .catch((error) => {
+        Alert.alert('Something went wrong', error);
+    })
+}
+    //default haku
+    const defaultList = () => {
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                setActivities(data.data);
+                setAllTags(data.tags);
+            })
+            .catch((error) => {
+                Alert.alert('Something went wrong', error);
+            })
+    }
+
+
+//Voisimme siirtyä React elements listaan
+    const listSeparator = () => {
+        return (
+            <View style={{
+                height: 1,
+                width: "90%",
+                backgroundColor: "#CED0CE",
+                marginLeft: "10%"
+            }}
+            />
+        )
+    }
+
+//Tarkoitus käyttää useammassa listassa, onko mahdollista? Pitäisikö renderitemit siirtää?
+    const renderItem = ({ item }) => (
+        <View style={{ flexDirection: 'row' }}>
+            <Text>{item}</Text>
+            <CheckBox
+                disabled={false}
+                value={
+                    selectedTags.indexOf(item) >= 0
+                }
+                onValueChange={(newValue) => {
+                    //jos oncheck value on true, lisää listaan
+                    if (newValue === true) {
+                        setSelectedTags([...selectedTags, item])
+                        //jos ei, poista listasta, tämän voisi muuttaa ehkä muotoon else{}
+                    } else {
+                        setSelectedTags(selectedTags.filter((current)=> current !== item))
+                    }
+                }}
+            />
+
         </View>
+    )
+    return (
+
+        <View style={styles.screen}>
+            <View style={styles.smallcontainer}>
+                {/**testi elementti alapuoella */}
+                <Text>{fetchString}</Text>
+                <Button title="GetItMf" onPress={uusiHaku} />
+                {/**lista johon tulee checkatut tägit */}
+                <Text style={styles.basicTexts}>Chosen Tags</Text>
+                <FlatList data={selectedTags}
+                    keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={listSeparator}
+                    renderItem={({ item }) => <Text>{item}</Text>} />
+            </View>
+            <View style={styles.smallcontainer}>
+                <FlatList
+                    data={activities}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => <Text>{item.name.fi}</Text>}
+                    ItemSeparatorComponent={listSeparator} style={{ marginLeft: "5%" }} />
+            </View>
+
+            <View style={styles.smallcontainer}>
+                {/**lista josta voi checkata tägejä */}
+                <Button title='GetActsWithTags' onPress={getActsWithTags}/>
+                <FlatList data={array}
+                    keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={listSeparator}
+                    renderItem={renderItem} />
+            </View>
+
+        </View>
+
     );
 }
-
+/** 
+ * Siirretään tyylit omaan tiedostoon    
+*/
 const styles = StyleSheet.create({
     //Main screen
     screen: {
@@ -187,6 +219,6 @@ const styles = StyleSheet.create({
     },
     basicTexts: {
         fontSize: 18,
-        alignSelf: 'flex-start'
+        alignSelf: 'center'
     }
 });
