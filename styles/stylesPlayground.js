@@ -1,8 +1,4 @@
-/**
-Pohja tyylitiedostolle, kaikki tyylit tänne (eli katsotaan läpi tiedostot)
-Miten toimii tämän tiedoston kutsuminen sivuilla?
-Refaktrointi tälle, voidaan vaihtaa js, en tiedä miksei.
-*/
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
     //Main screen
@@ -92,3 +88,4 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     }
 });
+export { styles }
