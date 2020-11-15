@@ -10,8 +10,14 @@ export default function Mainpage({ navigation }) {
   const [tags, setTags] = useState('');
   const [activities, setActivities] = useState([]);
   const [allTags, setAllTags] = useState([]);
-  const [osoite, setOsoite] = useState('');
+  const [address, setAddress] = useState('');
   const [note, setNote] = useState('Default lista');
+  const [region, setRegion] = useState({
+      latitude: 60.167389,
+      longitude: 24.931080,
+      latitudeDelta: 0.0322,
+      longitudeDelta: 0.0221
+  });
 
 
 //Haetaan lista aktiviteeteista ja tagseista
@@ -53,13 +59,29 @@ const getActivities = () => {
 
   }
 
-  //Hakee apista kartan
-  const getOsoite = () => {
-    fetch('http://www.mapquestapi.com/geocoding/v1/address?key=RGx0aXHHuyCCnCZA30GjP9laK2mzcHUp&location=')
-      .then(response => response.json())
-      .then(data => setOsoite(data.locations))
-      .catch(err => console.error(err))
-  }
+  // const getAddress = ()  => {
+  //   fetch(`http://open-api.myhelsinki.fi/v1/activities/`)
+  //   .then(response => response.json())
+  //   .then(data => setAddress(data.location.address.street_address))
+  //   .catch(err => console.error(err))
+
+  // },
+  
+  // //Hakee apista kartan
+  // const getCoordinates = () => {
+  //   fetch(`http://www.mapquestapi.com/geocoding/v1/address?key=RGx0aXHHuyCCnCZA30GjP9laK2mzcHUp&location=${address}`)
+  //     .then(response => response.json())
+  //     .then((data) => {
+  //     const lat = data.results[0].locations[0].latLng.lat;
+  //     const lng = data.results[0].locations[0].latLng.lng;
+  //     setRegion({
+  //       latitude:lat,
+  //       longitude: lng,
+  //       latitudeDelta: 0.0322,
+  //       longitudeDelta: 0.0221
+  //     });
+  //   }
+  //   )}
 
     const listSeparator = () => {
         return (
@@ -92,9 +114,11 @@ const getActivities = () => {
       keyExtractor={item => item.id}
       renderItem={({ item }) => (
             <ListItem bottomDivider>
+              
+              <Button onPress={getAddress}/>
               <ListItem.Content>
                 <Tooltip popover={<Text>{item.location.address.street_address}</Text>}>
-                  <Text>{item.name.fi}</Text>
+                  <Text>{item.name.fi} </Text> 
                 </Tooltip>
                 </ListItem.Content>
                 <ListItem.Chevron  />
