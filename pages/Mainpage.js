@@ -115,7 +115,7 @@ const getActivities = () => {
       renderItem={({ item }) => (
             <ListItem bottomDivider>
               
-              <Button onPress={getAddress}/>
+              {/* <Button onPress={getAddress}/> */}
               <ListItem.Content>
                 <Tooltip popover={<Text>{item.location.address.street_address}</Text>}>
                   <Text>{item.name.fi} </Text> 
