@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Alert, FlatList, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
-import { Header, ListItem, Input, Button, Tooltip } from 'react-native-elements';
+import { Header, ListItem, Input, Button, Tooltip, Card } from 'react-native-elements';
 import { styles }  from '../styles/stylesMainpage';
 
 export default function Mainpage({ navigation }) {
@@ -12,12 +12,7 @@ export default function Mainpage({ navigation }) {
   const [allTags, setAllTags] = useState([]);
   const [address, setAddress] = useState('');
   const [note, setNote] = useState('Default lista');
-  const [region, setRegion] = useState({
-      latitude: 60.167389,
-      longitude: 24.931080,
-      latitudeDelta: 0.0322,
-      longitudeDelta: 0.0221
-  });
+  const [region, setRegion] = useState('');
 
 
 //Haetaan lista aktiviteeteista ja tagseista
@@ -127,9 +122,20 @@ const getActivities = () => {
                 <ListItem.Chevron  />
               </ListItem>
           )}
-          onPress={getCoordinates}
       ItemSeparatorComponent={listSeparator} data={activities} />
-    </View>
+    {/* <Card>
+    <Card.Title>{item.name.fi}</Card.Title>
+    <Card.Divider/>
+    {/* <Card.Image source={require('../images/pic2.jpg')} /> */}
+    {/* <Text style={{marginBottom: 10}}>
+      {item.description.body}
+   </Text>
+    <Button
+    icon={<Icon name='code' color='#ffffff' />}
+    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
+    title='VIEW NOW' />
+    </Card> */}
+    </View> 
 {/*Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen*/}
       <View style={styles.mapcontainer} >
         <MapView
