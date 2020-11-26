@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer} from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Mainpage from './pages/Mainpage';
-import Activities from'./pages/Activities';
+import AdvSearch from'./pages/AdvSearch';
 import Fiddlin from'./pages/Playground';
 
 //npm install @react-navigation/bottom-tabs
@@ -17,7 +17,7 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator>
         <Tab.Screen name="Mainpage" component={Mainpage} />
-        <Tab.Screen name="Activities" component={Activities} />
+        <Tab.Screen name="AdvSearch" component={AdvSearch} />
         <Tab.Screen name="Playground" component={Fiddlin} />
       </Tab.Navigator>
       </NavigationContainer>
