@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Alert, FlatList, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Alert, FlatList, TextInput, Linking } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
-import { Header, ListItem, Input, Button, Tooltip } from 'react-native-elements';
+import { Header, ListItem, Input, Button, Tooltip, Card, Icon } from 'react-native-elements';
 import { styles }  from '../styles/stylesMainpage';
 
 export default function Mainpage({ navigation }) {
@@ -12,12 +12,7 @@ export default function Mainpage({ navigation }) {
   const [allTags, setAllTags] = useState([]);
   const [address, setAddress] = useState('');
   const [note, setNote] = useState('Default lista');
-  const [region, setRegion] = useState({
-      latitude: 60.167389,
-      longitude: 24.931080,
-      latitudeDelta: 0.0322,
-      longitudeDelta: 0.0221
-  });
+  const [region, setRegion] = useState('');
 
 
 //Haetaan lista aktiviteeteista ja tagseista
@@ -56,34 +51,25 @@ const getActivities = () => {
       .catch((error) => {
         Alert.alert('Something went wrong', error);
       })
-
   }
 
-  // const getAddress = ()  => {
-  //   fetch(`http://open-api.myhelsinki.fi/v1/activities/`)
-  //   .then(response => response.json())
-  //   .then(data => setAddress(data.location.address.street_address))
-  //   .catch(err => console.error(err))
+  //Haetaan aktiviteetin koordinaatit
+const getCoordinates = () => {
+    fetch(`http://open-api.myhelsinki.fi/v1/activities/${item.location}`)
+      .then(response => response.json())
+      .then((data) => {
+        const lat = data.location.lat;
+        const lng = data.location.lon;
+        setRegion({
+               latitude:lat,
+               longitude: lng,
+               latitudeDelta: 0.0322,
+               longitudeDelta: 0.0221
+       });
+    })
+  }
 
-  // },
-  
-  // //Hakee apista kartan
-  // const getCoordinates = () => {
-  //   fetch(`http://www.mapquestapi.com/geocoding/v1/address?key=RGx0aXHHuyCCnCZA30GjP9laK2mzcHUp&location=${address}`)
-  //     .then(response => response.json())
-  //     .then((data) => {
-  //     const lat = data.results[0].locations[0].latLng.lat;
-  //     const lng = data.results[0].locations[0].latLng.lng;
-  //     setRegion({
-  //       latitude:lat,
-  //       longitude: lng,
-  //       latitudeDelta: 0.0322,
-  //       longitudeDelta: 0.0221
-  //     });
-  //   }
-  //   )}
-
-    const listSeparator = () => {
+const listSeparator = () => {
         return (
             <View style={{
                 height: 1,
@@ -92,8 +78,8 @@ const getActivities = () => {
                 marginLeft: "10%"
             }}
             />
-        )
-    }
+        )}
+
   return (
 
     <View style={styles.mainContainer}>
@@ -109,23 +95,34 @@ const getActivities = () => {
 
     <View style={styles.listcontainer}>
       <Text style={{textAlign: 'center', fontSize:15, padding: 5, fontWeight:'bold' }}>{note}</Text>
-    <FlatList
+      <FlatList
       style={{marginLeft: "0%", height:150}}
       keyExtractor={item => item.id}
       renderItem={({ item }) => (
-            <ListItem bottomDivider>
-              
-              {/* <Button onPress={getAddress}/> */}
-              <ListItem.Content>
-                <Tooltip popover={<Text>{item.location.address.street_address}</Text>}>
-                  <Text>{item.name.fi} </Text> 
-                </Tooltip>
-                </ListItem.Content>
-                <ListItem.Chevron  />
-              </ListItem>
+      <Card>
+      <Card.Title>{item.name.fi}</Card.Title>
+      <Card.Divider/>
+        <Text style={{marginBottom: 10}}>
+        Osoite: {item.location.address.street_address}</Text>
+        <Text style={{marginBottom: 10}}>{item.where_when_duration.where_and_when}</Text>
+        <Text style={{marginBottom: 10}}onPress={() => {Linking.openURL(item.info.url)}}>Lisätietoa</Text>
+        <Text style={{marginBottom: 10}}>Lisätietoa: {item.info_url}</Text>
+        <Card.Image style={{marginBottom: 10}}source={{uri: item.description.images.url}}/>
+        </Card>
+        
+            // <ListItem bottomDivider>
+            //   <ListItem.Content>
+            //     <Tooltip popover={<Text>{item.location.address.street_address}</Text>}>
+            //       <Text>{item.name.fi} </Text> 
+            //     </Tooltip>
+            //     </ListItem.Content>
+            //     <ListItem.Chevron  />
+            //   </ListItem>
           )}
+          onPress={getCoordinates}
       ItemSeparatorComponent={listSeparator} data={activities} />
-    </View>
+    
+    </View> 
 {/*Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen*/}
       <View style={styles.mapcontainer} >
         <MapView
@@ -135,7 +132,8 @@ const getActivities = () => {
             longitude: 24.931080,
             latitudeDelta: 0.0322,
             longitudeDelta: 0.0221
-          }}>
+          }}
+          onRegionChange={setRegion}>
 
           <Marker
             coordinate={{
