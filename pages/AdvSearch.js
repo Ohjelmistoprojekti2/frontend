@@ -4,21 +4,6 @@ import { StyleSheet, Text, View, Button, FlatList, Alert, RecyclerViewBackedScro
 import CheckBox from '@react-native-community/checkbox';
 import { styles } from '../styles/stylesPlayground';
 
-/** ToDoList
- * DONE: MIKSI CHECKBOXIA EI VOI UNCHECKATA
- * Mitä kaikkea voi refaktoroida erillisiksi elementeiksi?
- * Tyylit omaan tiedostoon ja funktiot?
- * Voidaanko yhdistää funktioita? yksi urli ja yksi muuttuva haku?
- * Sama ilman buttoneita, miten? Epäilen async await toiminnolla.
- *
- * Bugs: Jos hakee useampaa tägiä, myhelsinki api palauttaa vain ensimmäisen tägin löydöt
- * Returns items with ANY of the tags listed. Separate tags with a comma.
- * ?tags_search=sauna%2C%20bar palauttaa listan jossa on vain sauna aktiviteetteja
- *
- * Bugs: Jos yrittää hakea aktiviteettia joka sisältää useamman tägin
- * ?tags_filter= Ei helsinkiApi palauta yhtään tulosta.
- */
-
 export default function Fiddlin({ navigation }) {
     // valittujen itemien tägit
     const [currentTags, setCurrentTags] = useState([]);
@@ -30,13 +15,14 @@ export default function Fiddlin({ navigation }) {
     //String state jonka voi laittaa urlin sisään
     const [fetchString, setFetchString] = useState('');
     //const [defaultFetch, setDefaultFetch] = useState(true);
+
     //Haetaan lista aktiviteeteista ja tagseista
     let array = Object.values(allTags);
-    
-    //default haku
+
+    //haku joka muokkaantuu käytön mukaan
     const dataFetch = () => {
         let url = `http://open-api.myhelsinki.fi/v1/activities/?${fetchString}language_filter=fi&limit=20`
-console.log(url)
+
         fetch(url)
             .then(response => response.json())
             .then(data => {
@@ -50,52 +36,23 @@ console.log(url)
                 Alert.alert('Something went wrong', error);
             })
     }
+    //useEffect joka luo filtteri lauseen kun käyttäjä muuttaa tägi valintojaan
+    useEffect(() => {
+        createFilterTagsString();
+    }, [selectedTags]);
 
-    /* useEffect(() => {
-        dataFetch()
-    }, []); */
-
-   // useEffect joka päivittyy kun selectedTags päivittyy/checklist onchange ja suorittaa ensin getActs ja sitten datafetch
-   useEffect(() => {
-       console.log(selectedTags)
-         dataFetch(); 
+    //useEffect suorittaa uuden haun kun filtteri lause on valmis
+    useEffect(() => {
+        dataFetch();
     }, [fetchString]);
 
-    useEffect(() => {
-        getActsWithTags();
-    }, [selectedTags]);
- 
-   /*  fetchString joka on staattinen
-   let fetchString = {
+    const createFilterTagsString = () => {
         let str = ('tags_search=');
         // Käydään läpi valitut tägit ja tehdään niistä urliin sopiva stringi
         if (selectedTags.length > 0) {
             for (let i = 0; i < selectedTags.length; i++) {
                 //Yhden tägin & merkki rikkoi haun, joten tarkistetaan onko tägillä sitä merkkiä ja korvataan
-                selectedTags[i] = selectedTags[i].replace("&", "%26")
-                if (selectedTags[i + 1]) {
-                    //Jos tägin jälkeen on tägi
-                    str = str.concat(selectedTags[i] + "%2C%20")
-                } else {
-                    //jos on viimeinen tägi
-                    str = str.concat(selectedTags[i] + '&')
-                }
-                setFetchString(str)
-            }
-        }
-        else {
-            ('')
-        }
-    } */
 
-     const  getActsWithTags = () => {
-       
-        let str = ('tags_search=');
-        // Käydään läpi valitut tägit ja tehdään niistä urliin sopiva stringi
-        if (selectedTags.length > 0) {
-            for (let i = 0; i < selectedTags.length; i++) {
-                //Yhden tägin & merkki rikkoi haun, joten tarkistetaan onko tägillä sitä merkkiä ja korvataan
-               
                 if (selectedTags[i + 1]) {
                     //Jos tägin jälkeen on tägi
                     str = str.concat(selectedTags[i].replace("&", "%26") + "%2C%20")
@@ -108,8 +65,7 @@ console.log(url)
         }
         else {
             setFetchString('')
-        } 
-         //dataFetch() 
+        }
     }
 
     //Voisimme siirtyä React elements listaan
@@ -124,22 +80,14 @@ console.log(url)
             />
         )
     }
-    //sulautettu getActsWithTags ja reaktiivinen fetch
+
+    //Muuta käyttäjän tägi valintoja
     const checkAnFetch = (newValue, tag) => {
-        //Step 1
         if (newValue === true) {
             setSelectedTags([...selectedTags, tag])
-            //jos ei, poista listasta, tämän voisi muuttaa ehkä muotoon else{}
         } else {
             setSelectedTags(selectedTags.filter((current) => current !== tag))
         }
-        //Ensimmäinen tägin valinta lisää vain tägin listaan,
-        //Toinen tägin valinta lisää toisen tägin ja tekee fetchstringin ensimmäiselle
-        //Kolmas toistaa kaavaa ja hakee joko ensimmäisen tägin fetchillä tai kahden,
-        //Mahdoton tietää koska myHelsingin apit ei toimi
-       
-        //getActsWithTags()
-      
     }
 
 
@@ -154,26 +102,29 @@ console.log(url)
                 }
                 onValueChange={(newValue) => { checkAnFetch(newValue, item) }}
             //jos oncheck value on true, lisää listaan
-
             />
-
         </View>
     )
+
+
     return (
 
         <View style={styles.screen}>
-            <View style={styles.smallcontainer}>
-                {/**testi elementti alapuoella */}
-                <Text>{fetchString}</Text>
-                <View style={styles.row}>
-                    <Button title="Haku" onPress={dataFetch} />
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+                <View style={styles.smallcontainer}>
+                    <Text style={styles.basicTexts}>Chosen Tags</Text>
+                    <FlatList data={selectedTags}
+                        keyExtractor={(item, index) => index.toString()}
+                        ItemSeparatorComponent={listSeparator}
+                        renderItem={({ item }) => <Text>{item}</Text>} />
                 </View>
-                {/**lista johon tulee checkatut tägit */}
-                <Text style={styles.basicTexts}>Chosen Tags</Text>
-                <FlatList data={selectedTags}
-                    keyExtractor={(item, index) => index.toString()}
-                    ItemSeparatorComponent={listSeparator}
-                    renderItem={({ item }) => <Text>{item}</Text>} />
+                <View style={styles.smallcontainer}>
+                    {/**lista josta voi checkata tägejä */}
+                    <FlatList data={array}
+                        keyExtractor={(item, index) => index.toString()}
+                        ItemSeparatorComponent={listSeparator}
+                        renderItem={renderItem} />
+                </View>
             </View>
             <View style={styles.smallcontainer}>
                 <FlatList
@@ -182,16 +133,6 @@ console.log(url)
                     renderItem={({ item }) => <Text>{item.name.fi}</Text>}
                     ItemSeparatorComponent={listSeparator} style={{ marginLeft: "5%" }} />
             </View>
-
-            <View style={styles.smallcontainer}>
-                {/**lista josta voi checkata tägejä */}
-                <Button title='GetActsWithTags' onPress={getActsWithTags} />
-                <FlatList data={array}
-                    keyExtractor={(item, index) => index.toString()}
-                    ItemSeparatorComponent={listSeparator}
-                    renderItem={renderItem} />
-            </View>
-
         </View>
 
     );
