@@ -101,18 +101,20 @@ const listSeparator = () => {
       keyExtractor={item => item.id}
       renderItem={({ item }) => (
       <Card>
-      <Card.Title>{item.name.fi}</Card.Title>
-      <Card.Divider/>
+        <Card.Title>{item.name.fi}</Card.Title>
+        
+        <Card.Divider/>
+        
         <Text style={{marginBottom: 10}}>
-        Osoite: {item.location.address.street_address}</Text>
+          Osoite: {item.location.address.street_address}
+        </Text>
+        
         <Text style={{marginBottom: 10}}>{item.where_when_duration.where_and_when}</Text>
+        
         <Text style={{marginBottom: 10, color:'#130DDE'}}onPress={() => {Linking.openURL(item.info_url)}}>Klikkaa tästä tapahtuman nettisivuille</Text>
+        
         <Card.Image style={{marginBottom: 10}}source={{uri: item.description.images[0].url}}/>
-        </Card>
-        
-        
-        
-          )}
+      </Card>)}
           onPress={getCoordinates}
       ItemSeparatorComponent={listSeparator} data={activities} />
     

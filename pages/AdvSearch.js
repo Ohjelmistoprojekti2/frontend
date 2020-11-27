@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Button, FlatList, Alert, RecyclerViewBackedScro
 //expo install @react-native-community/checkbox
 import CheckBox from '@react-native-community/checkbox';
 import { styles } from '../styles/stylesPlayground';
+import { Card } from 'react-native-elements';
 
 export default function Fiddlin({ navigation }) {
     // valittujen itemien tägit
@@ -81,6 +82,22 @@ export default function Fiddlin({ navigation }) {
         )
     }
 
+  //Haetaan aktiviteetin koordinaatit
+    const getCoordinates = () => {
+        fetch(`http://open-api.myhelsinki.fi/v1/activities/${item.location}`)
+        .then(response => response.json())
+        .then((data) => {
+            const lat = data.location.lat;
+            const lng = data.location.lon;
+            setRegion({
+                latitude:lat,
+                longitude: lng,
+                latitudeDelta: 0.0322,
+                longitudeDelta: 0.0221
+            });
+        })
+    }
+
     //Muuta käyttäjän tägi valintoja
     const checkAnFetch = (newValue, tag) => {
         if (newValue === true) {
@@ -108,7 +125,7 @@ export default function Fiddlin({ navigation }) {
 
 
     return (
-
+        
         <View style={styles.screen}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={styles.smallcontainer}>
@@ -126,14 +143,35 @@ export default function Fiddlin({ navigation }) {
                         renderItem={renderItem} />
                 </View>
             </View>
-            <View style={styles.smallcontainer}>
+            <View style={styles.listcontainer}>
                 <FlatList
-                    data={activities}
+                    style={{marginLeft: "0%", height:150}}
                     keyExtractor={item => item.id}
-                    renderItem={({ item }) => <Text>{item.name.fi}</Text>}
-                    ItemSeparatorComponent={listSeparator} style={{ marginLeft: "5%" }} />
-            </View>
+                    renderItem={({ item }) => (
+                        <Card>
+                            <Card.Title>
+                                {item.name.fi}
+                            </Card.Title>
+                            <Card.Divider/>
+                            <Text style={{marginBottom: 10}}>
+                                Osoite: {item.location.address.street_address}
+                            </Text>
+                            <Text style={{marginBottom: 10}}>
+                                {item.where_when_duration.where_and_when}
+                            </Text>
+                            <Text style={{marginBottom: 10, color:'#130DDE'}}onPress={() => {Linking.openURL(item.info_url)}}>
+                                Klikkaa tästä tapahtuman nettisivuille
+                            </Text>
+                            <Card.Image style={{marginBottom: 10}}source={{uri: item.description.images[0].url}}/>
+                        </Card>
+                    )}
+        onPress={getCoordinates}
+      ItemSeparatorComponent={listSeparator} data={activities} />
+    
+    </View> 
         </View>
+
+        
 
     );
 }
