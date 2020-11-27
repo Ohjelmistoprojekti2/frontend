@@ -4,6 +4,9 @@ import MapView, { Marker } from 'react-native-maps';
 import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 import { Header, Input, Button, Card } from 'react-native-elements';
 import { styles }  from '../styles/stylesMainpage';
+//npm install i react-native-image-box
+import {SliderBox} from 'react-native-image-slider-box';
+//Lagaa ihan sikana alkuun, ratkaisuja?
 
 export default function Mainpage({ navigation }) {
 
@@ -12,6 +15,8 @@ export default function Mainpage({ navigation }) {
   const [note, setNote] = useState('Tapahtumat');
   const [region, setRegion] = useState({});
 
+  
+  const getImages = (images) => images.map(image => image.url);
 
 //Haetaan lista aktiviteeteista ja tagseista
   useEffect(() => {
@@ -74,7 +79,12 @@ const listSeparator = () => {
         <Text style={{marginBottom: 10}} onPress={getCoordinates}>Osoite: {item.location.address.street_address}</Text>
         <Text style={{marginBottom: 10}}>{item.where_when_duration.where_and_when}</Text>
         <Text style={{marginBottom: 10, color:'#130DDE'}}onPress={() => {Linking.openURL(item.info_url)}}>Klikkaa tästä tapahtuman nettisivuille</Text>
-        <Card.Image style={{marginBottom: 10}}source={{uri: item.description.images[0].url}}/>
+        <SliderBox
+            parentWidth={310}
+            paginationBoxVerticalPadding={20}
+            autoplay
+            circleLoop
+            images={getImages(item.description.images)}/>
         </Card>
           )}
       ItemSeparatorComponent={listSeparator} data={activities} />
