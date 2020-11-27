@@ -4,15 +4,19 @@ import MapView, { Marker } from 'react-native-maps';
 import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 import { Header, Input, Button, Card } from 'react-native-elements';
 import { styles }  from '../styles/stylesMainpage';
+//npm install i react-native-image-box
+import {SliderBox} from 'react-native-image-slider-box';
+//Lagaa ihan sikana alkuun, ratkaisuja?
 
 export default function Mainpage({ navigation }) {
 
-  const [tags, setTags] = useState('');
   const [activities, setActivities] = useState([]);
   const [allTags, setAllTags] = useState([]);
-  const [note, setNote] = useState('Default lista');
-  const [region, setRegion] = useState('');
+  const [note, setNote] = useState('Tapahtumat');
+  const [region, setRegion] = useState({});
 
+  
+  const getImages = (images) => images.map(image => image.url);
 
 //Haetaan lista aktiviteeteista ja tagseista
   useEffect(() => {
@@ -31,26 +35,6 @@ const defaultList = () => {
         Alert.alert('Something went wrong', error);
   })
 }
-
-//haetaan lista käyttäjän tägeillä, palautetaan default lista jos uusi lista on tyhjä
-const getActivities = () => {
-    fetch(`http://open-api.myhelsinki.fi/v1/activities/?tags_search=${tags}&language_filter=fi&limit=20`)
-      .then(response => response.json())
-      .then(data => {
-        if (data.data.length > 0){
-        setActivities(data.data);
-        setAllTags(data.tags);
-        setNote('Tässä hakemasi aktiviteetit');}
-
-        else {
-          defaultList();
-          setNote('Haulla tuli tyhjä lista, tässä default lista.')
-        }
-      })
-      .catch((error) => {
-        Alert.alert('Something went wrong', error);
-      })
-  }
 
   //Haetaan aktiviteetin koordinaatit
 const getCoordinates = () => {
@@ -77,24 +61,13 @@ const listSeparator = () => {
                 marginLeft: "10%"
             }}
             />
-
-        
         )}
 
   return (
 
     <View style={styles.mainContainer}>
 
-      <View style={styles.container} >
-        <Input
-          style={styles.inputs}
-          value={tags}
-          placeholder="Write tags"
-          onChangeText={(tags) => setTags(tags)} />
-        <Button type="outline" title="Find activities" onPress={getActivities} />
-      </View>
-
-    <View style={styles.listcontainer}>
+      <View style={styles.listcontainer}>
       <Text style={{textAlign: 'center', fontSize:15, padding: 5, fontWeight:'bold' }}>{note}</Text>
       <FlatList
       style={{marginLeft: "0%", height:150}}
