@@ -110,14 +110,7 @@ export default function Fiddlin({ navigation }) {
     return (
 
         <View style={styles.screen}>
-            <View style={{ flex: 1, flexDirection: 'row' }}>
-                <View style={styles.smallcontainer}>
-                    <Text style={styles.basicTexts}>Chosen Tags</Text>
-                    <FlatList data={selectedTags}
-                        keyExtractor={(item, index) => index.toString()}
-                        ItemSeparatorComponent={listSeparator}
-                        renderItem={({ item }) => <Text>{item}</Text>} />
-                </View>
+              
                 <View style={styles.smallcontainer}>
                     {/**lista josta voi checkata tägejä */}
                     <FlatList data={array}
@@ -125,7 +118,6 @@ export default function Fiddlin({ navigation }) {
                         ItemSeparatorComponent={listSeparator}
                         renderItem={renderItem} />
                 </View>
-            </View>
             <View style={styles.smallcontainer}>
                 <FlatList
                     data={activities}

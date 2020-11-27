@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Alert, FlatList, TextInput, Linking } from 'react-native';
+import { StyleSheet, Text, View, Alert, FlatList, TextInput, Linking, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 import { Header, ListItem, Input, Button, Tooltip, Card, Icon } from 'react-native-elements';
@@ -105,9 +105,8 @@ const listSeparator = () => {
         <Text style={{marginBottom: 10}}>
         Osoite: {item.location.address.street_address}</Text>
         <Text style={{marginBottom: 10}}>{item.where_when_duration.where_and_when}</Text>
-        <Text style={{marginBottom: 10}}onPress={() => {Linking.openURL(item.info.url)}}>Lisätietoa</Text>
-        <Text style={{marginBottom: 10}}>Lisätietoa: {item.info_url}</Text>
-        <Card.Image style={{marginBottom: 10}}source={{uri: item.description.images.url}}/>
+        <Text style={{marginBottom: 10}}onPress={() => {Linking.openURL(item.info_url)}}>Lisätietoa</Text>
+        <Card.Image style={{marginBottom: 10,}}source={{uri: item.description.images[0].url}}/>
         </Card>
         
             // <ListItem bottomDivider>

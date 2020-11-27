@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, Alert, RecyclerViewBackedScrollViewComponent } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, Alert, Image } from 'react-native';
 //expo install @react-native-community/checkbox
 import CheckBox from '@react-native-community/checkbox';
 import { styles } from '../styles/stylesPlayground';
@@ -163,12 +163,20 @@ console.log(url)
 
         <View style={styles.screen}>
             <View style={styles.smallcontainer}>
-                {/**testi elementti alapuoella */}
+
+        
+            </View>
+
+        </View>
+
+    );
+}
+/*         {/**testi elementti alapuoella }
                 <Text>{fetchString}</Text>
                 <View style={styles.row}>
                     <Button title="Haku" onPress={dataFetch} />
                 </View>
-                {/**lista johon tulee checkatut tägit */}
+                {/**lista johon tulee checkatut tägit }
                 <Text style={styles.basicTexts}>Chosen Tags</Text>
                 <FlatList data={selectedTags}
                     keyExtractor={(item, index) => index.toString()}
@@ -184,15 +192,9 @@ console.log(url)
             </View>
 
             <View style={styles.smallcontainer}>
-                {/**lista josta voi checkata tägejä */}
+                {/**lista josta voi checkata tägejä }
                 <Button title='GetActsWithTags' onPress={getActsWithTags} />
                 <FlatList data={array}
                     keyExtractor={(item, index) => index.toString()}
                     ItemSeparatorComponent={listSeparator}
-                    renderItem={renderItem} />
-            </View>
-
-        </View>
-
-    );
-}
+                    renderItem={renderItem} /> */
