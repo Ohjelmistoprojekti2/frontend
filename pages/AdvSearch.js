@@ -120,7 +120,7 @@ export default function AdvSearch({ navigation }) {
     //Tarkoitus käyttää useammassa listassa, onko mahdollista? Pitäisikö renderitemit siirtää?
     const renderItem = ({ item }) => (
         <View style={{ flexDirection: 'row' }}>
-            <Text>{item}</Text>
+            
             <CheckBox
                 disabled={false}
                 value={
@@ -129,7 +129,7 @@ export default function AdvSearch({ navigation }) {
                 onValueChange={(newValue) => { checkAnFetch(newValue, item) }}
             //jos oncheck value on true, lisää listaan
             />
-            <Text>   </Text>
+            <Text style={{width:80}}>{item}</Text>
         </View>
     )
 
@@ -144,7 +144,7 @@ export default function AdvSearch({ navigation }) {
                     keyExtractor={(item, index) => index.toString()}
                     ItemSeparatorComponent={listSeparator}
                     renderItem={renderItem} 
-                    numColumns={4}
+                    numColumns={3}
                     />
             </View>
             <View style={styles.listcontainer}>
