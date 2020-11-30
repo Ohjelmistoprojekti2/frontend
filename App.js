@@ -18,7 +18,6 @@ export default function App() {
       <Tab.Navigator>
         <Tab.Screen name="Mainpage" component={Mainpage} />
         <Tab.Screen name="AdvSearch" component={AdvSearch} />
-        <Tab.Screen name="Playground" component={Fiddlin} />
       </Tab.Navigator>
       </NavigationContainer>
    

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Alert, FlatList, TextInput, Linking, Image} from 'react-native';
+import { Text, View, Alert, FlatList, TextInput, Linking, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 import { Header, Input, Button, Card } from 'react-native-elements';
-import { styles }  from '../styles/stylesMainpage';
+import { styles } from '../styles/stylesMainpage';
 //npm install i react-native-image-box
-import {SliderBox} from 'react-native-image-slider-box';
+import { SliderBox } from 'react-native-image-slider-box';
 //Lagaa ihan sikana alkuun, ratkaisuja?
 
 export default function Mainpage({ navigation }) {
@@ -15,16 +15,16 @@ export default function Mainpage({ navigation }) {
   const [note, setNote] = useState('Tapahtumat');
   const [region, setRegion] = useState({});
 
-  
+
   const getImages = (images) => images.map(image => image.url);
 
-//Haetaan lista aktiviteeteista ja tagseista
+  //Haetaan lista aktiviteeteista ja tagseista
   useEffect(() => {
     defaultList()
   }, []);
 
-//default haku
-const defaultList = () => {
+  //default haku
+  const defaultList = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
       .then(response => response.json())
       .then(data => {
@@ -33,66 +33,73 @@ const defaultList = () => {
       })
       .catch((error) => {
         Alert.alert('Something went wrong', error);
-  })
-}
+      })
+  }
 
   //Haetaan aktiviteetin koordinaatit
-const getCoordinates = () => {
+  const getCoordinates = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/${item.location}`)
       .then(response => response.json())
       .then((data) => {
         const lat = data.location.lat;
         const lng = data.location.lon;
         setRegion({
-               latitude:lat,
-               longitude: lng,
-               latitudeDelta: 0.0322,
-               longitudeDelta: 0.0221
-       });
-    })
+          latitude: lat,
+          longitude: lng,
+          latitudeDelta: 0.0322,
+          longitudeDelta: 0.0221
+        });
+      })
   }
 
-const listSeparator = () => {
-        return (
-            <View style={{
-                height: 1,
-                width: "90%",
-                backgroundColor: "#CED0CE",
-                marginLeft: "10%"
-            }}
-            />
-        )}
+  const listSeparator = () => {
+    return (
+      <View style={{
+        height: 1,
+        width: "90%",
+        backgroundColor: "#CED0CE",
+        marginLeft: "10%"
+      }}
+      />
+    )
+  }
 
   return (
 
     <View style={styles.mainContainer}>
 
       <View style={styles.listcontainer}>
-      <Text style={{textAlign: 'center', fontSize:15, padding: 5, fontWeight:'bold' }}>{note}</Text>
-      <FlatList
-      style={{marginLeft: "0%", height:150}}
-      keyExtractor={item => item.id}
-      renderItem={({ item }) => (
-      <Card>
-        <Card.Title>{item.name.fi}</Card.Title>
-        
-        <Card.Divider/>
-        
-        <Text style={{marginBottom: 10}}>
-          Osoite: {item.location.address.street_address}
-        </Text>
-        
-        <Text style={{marginBottom: 10}}>{item.where_when_duration.where_and_when}</Text>
-        
-        <Text style={{marginBottom: 10, color:'#130DDE'}}onPress={() => {Linking.openURL(item.info_url)}}>Klikkaa tästä tapahtuman nettisivuille</Text>
-        
-        <Card.Image style={{marginBottom: 10}}source={{uri: item.description.images[0].url}}/>
-      </Card>)}
+        <Text style={{ textAlign: 'center', fontSize: 15, padding: 5, fontWeight: 'bold' }}>{note}</Text>
+        <FlatList
+          style={{ marginLeft: "0%", height: 150 }}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <Card>
+              <Card.Title>{item.name.fi}</Card.Title>
+
+              <Card.Divider />
+
+              <Text style={{ marginBottom: 10 }}>
+                Osoite: {item.location.address.street_address}
+              </Text>
+
+              <Text style={{ marginBottom: 10 }}>{item.where_when_duration.where_and_when}</Text>
+
+              <Text style={{ marginBottom: 10, color: '#130DDE' }} onPress={() => { Linking.openURL(item.info_url) }}>Klikkaa tästä tapahtuman nettisivuille</Text>
+              <SliderBox
+                resizeMethod={'resize'}
+                resizeMode={'cover'}
+                parentWidth={310}
+                paginationBoxVerticalPadding={20}
+                autoplay
+                circleLoop
+                images={getImages(item.description.images)} />
+            </Card>)}
           onPress={getCoordinates}
-      ItemSeparatorComponent={listSeparator} data={activities} />
-    
-    </View> 
-{/*Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen*/}
+          ItemSeparatorComponent={listSeparator} data={activities} />
+
+      </View>
+      {/*Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen*/}
       <View style={styles.mapcontainer} >
         <MapView
           style={styles.map}

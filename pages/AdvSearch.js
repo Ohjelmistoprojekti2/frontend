@@ -4,8 +4,10 @@ import { StyleSheet, Text, View, Button, FlatList, Alert, RecyclerViewBackedScro
 import CheckBox from '@react-native-community/checkbox';
 import { styles } from '../styles/stylesPlayground';
 import { Card } from 'react-native-elements';
+//npm install i react-native-image-box
+import { SliderBox } from 'react-native-image-slider-box';
 
-export default function Fiddlin({ navigation }) {
+export default function AdvSearch({ navigation }) {
     // valittujen itemien tägit
     const [currentTags, setCurrentTags] = useState([]);
     // lista kaikille tageille
@@ -17,6 +19,7 @@ export default function Fiddlin({ navigation }) {
     const [fetchString, setFetchString] = useState('');
     //const [defaultFetch, setDefaultFetch] = useState(true);
 
+    const getImages = (images) => images.map(image => image.url);
     //Haetaan lista aktiviteeteista ja tagseista
     let array = Object.values(allTags);
 
@@ -56,10 +59,10 @@ export default function Fiddlin({ navigation }) {
 
                 if (selectedTags[i + 1]) {
                     //Jos tägin jälkeen on tägi
-                    str = str.concat(selectedTags[i].replace("&", "%26") + "%2C%20")
+                    str = str.concat(selectedTags[i].replace("&", "%26").replace(/\s+/g, "%20") + "%2C")
                 } else {
                     //jos on viimeinen tägi
-                    str = str.concat(selectedTags[i].replace("&", "%26") + '&')
+                    str = str.concat(selectedTags[i].replace("&", "%26").replace(/\s+/g, "%20") + '&')
                 }
                 setFetchString(str)
             }
@@ -82,20 +85,20 @@ export default function Fiddlin({ navigation }) {
         )
     }
 
-  //Haetaan aktiviteetin koordinaatit
+    //Haetaan aktiviteetin koordinaatit
     const getCoordinates = () => {
         fetch(`http://open-api.myhelsinki.fi/v1/activities/${item.location}`)
-        .then(response => response.json())
-        .then((data) => {
-            const lat = data.location.lat;
-            const lng = data.location.lon;
-            setRegion({
-                latitude:lat,
-                longitude: lng,
-                latitudeDelta: 0.0322,
-                longitudeDelta: 0.0221
-            });
-        })
+            .then(response => response.json())
+            .then((data) => {
+                const lat = data.location.lat;
+                const lng = data.location.lon;
+                setRegion({
+                    latitude: lat,
+                    longitude: lng,
+                    latitudeDelta: 0.0322,
+                    longitudeDelta: 0.0221
+                });
+            })
     }
 
     //Muuta käyttäjän tägi valintoja
@@ -125,45 +128,53 @@ export default function Fiddlin({ navigation }) {
 
 
     return (
-        
+
         <View style={styles.screen}>
-              
-                <View style={styles.smallcontainer}>
-                    {/**lista josta voi checkata tägejä */}
-                    <FlatList data={array}
-                        keyExtractor={(item, index) => index.toString()}
-                        ItemSeparatorComponent={listSeparator}
-                        renderItem={renderItem} />
-                </View>
+
+            <View style={styles.smallcontainer}>
+                {/**lista josta voi checkata tägejä */}
+                <FlatList data={array}
+                    keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={listSeparator}
+                    renderItem={renderItem} />
+            </View>
             <View style={styles.smallcontainer}>
                 <FlatList
-                    style={{marginLeft: "0%", height:150}}
+                    style={{ marginLeft: "0%", height: 150 }}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => (
                         <Card>
                             <Card.Title>
                                 {item.name.fi}
                             </Card.Title>
-                            <Card.Divider/>
-                            <Text style={{marginBottom: 10}}>
+                            <Card.Divider />
+                            <Text style={{ marginBottom: 10 }}>
                                 Osoite: {item.location.address.street_address}
                             </Text>
-                            <Text style={{marginBottom: 10}}>
+                            <Text style={{ marginBottom: 10 }}>
                                 {item.where_when_duration.where_and_when}
                             </Text>
-                            <Text style={{marginBottom: 10, color:'#130DDE'}}onPress={() => {Linking.openURL(item.info_url)}}>
+                            <Text style={{ marginBottom: 10, color: '#130DDE' }} onPress={() => { Linking.openURL(item.info_url) }}>
                                 Klikkaa tästä tapahtuman nettisivuille
                             </Text>
-                            <Card.Image style={{marginBottom: 10}}source={{uri: item.description.images[0].url}}/>
+                            <SliderBox
+                                resizeMethod={'resize'}
+                                resizeMode={'cover'}
+                                parentWidth={310}
+                                paginationBoxVerticalPadding={20}
+                                autoplay
+                                circleLoop
+                                images={getImages(item.description.images)} />
+
                         </Card>
                     )}
-        onPress={getCoordinates}
-      ItemSeparatorComponent={listSeparator} data={activities} />
-    
-    </View> 
+                    onPress={getCoordinates}
+                    ItemSeparatorComponent={listSeparator} data={activities} />
+
+            </View>
         </View>
 
-        
+
 
     );
 }
