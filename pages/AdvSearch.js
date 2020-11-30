@@ -7,6 +7,12 @@ import { Card } from 'react-native-elements';
 //npm install i react-native-image-box
 import { SliderBox } from 'react-native-image-slider-box';
 
+/**
+ * @param {*} param0 wot, google what is this?
+ * Seuraavaksi:
+ * Tälle sivulle kaksi buttonia(tjs) toisessa tags_search ja toisessa tags_filter
+ * Checklista jotenkin järkevämmäksi kuin.. tuo.
+ */
 export default function AdvSearch({ navigation }) {
     // valittujen itemien tägit
     const [currentTags, setCurrentTags] = useState([]);
@@ -123,6 +129,7 @@ export default function AdvSearch({ navigation }) {
                 onValueChange={(newValue) => { checkAnFetch(newValue, item) }}
             //jos oncheck value on true, lisää listaan
             />
+            <Text>   </Text>
         </View>
     )
 
@@ -136,9 +143,11 @@ export default function AdvSearch({ navigation }) {
                 <FlatList data={array}
                     keyExtractor={(item, index) => index.toString()}
                     ItemSeparatorComponent={listSeparator}
-                    renderItem={renderItem} />
+                    renderItem={renderItem} 
+                    numColumns={4}
+                    />
             </View>
-            <View style={styles.smallcontainer}>
+            <View style={styles.listcontainer}>
                 <FlatList
                     style={{ marginLeft: "0%", height: 150 }}
                     keyExtractor={item => item.id}
