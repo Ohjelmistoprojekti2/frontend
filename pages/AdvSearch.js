@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, Alert, RecyclerViewBackedScrollViewComponent } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, Alert, Linking, } from 'react-native';
 //expo install @react-native-community/checkbox
 import CheckBox from '@react-native-community/checkbox';
 import { styles } from '../styles/stylesPlayground';
@@ -160,7 +160,7 @@ export default function AdvSearch({ navigation }) {
                             <SliderBox
                                 resizeMethod={'resize'}
                                 resizeMode={'cover'}
-                                parentWidth={310}
+                                parentWidth={280}
                                 paginationBoxVerticalPadding={20}
                                 autoplay
                                 circleLoop
