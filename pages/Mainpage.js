@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Alert, FlatList, TextInput, Linking, Image } from 'react-native';
+import { Text, View, Alert, FlatList, Linking } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
-import { Header, Input, Button, Card } from 'react-native-elements';
+import { Card } from 'react-native-elements';
 import { styles } from '../styles/stylesMainpage';
-//npm install i react-native-image-box
 import { SliderBox } from 'react-native-image-slider-box';
-//Lagaa ihan sikana alkuun, ratkaisuja?
+
 
 export default function Mainpage({ navigation }) {
 
@@ -18,12 +16,12 @@ export default function Mainpage({ navigation }) {
 
   const getImages = (images) => images.map(image => image.url);
 
-  //Haetaan lista aktiviteeteista ja tagseista
+  //Get list of activities and tags
   useEffect(() => {
     defaultList()
   }, []);
 
-  //default haku
+  //Default list search 
   const defaultList = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
       .then(response => response.json())
@@ -36,7 +34,7 @@ export default function Mainpage({ navigation }) {
       })
   }
 
-  //Haetaan aktiviteetin koordinaatit
+  //Get coordinates of activity
   const getCoordinates = () => {
     fetch(`http://open-api.myhelsinki.fi/v1/activities/${item.location}`)
       .then(response => response.json())
@@ -99,7 +97,7 @@ export default function Mainpage({ navigation }) {
           ItemSeparatorComponent={listSeparator} data={activities} />
 
       </View>
-      {/*Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen*/}
+      {/*Mapview and Marker returns coordinates of Kamppi, Helsinki*/}
       <View style={styles.mapcontainer} >
         <MapView
           style={styles.map}

@@ -1,35 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, Alert, Linking, } from 'react-native';
-//expo install @react-native-community/checkbox
+import { Text, View, FlatList, Alert, Linking, } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { styles } from '../styles/stylesPlayground';
 import { Card } from 'react-native-elements';
-//npm install i react-native-image-box
 import { SliderBox } from 'react-native-image-slider-box';
 
-/**
- * @param {*} param0 wot, google what is this?
- * Seuraavaksi:
- * Tälle sivulle kaksi buttonia(tjs) toisessa tags_search ja toisessa tags_filter
- * Checklista jotenkin järkevämmäksi kuin.. tuo.
- */
+
 export default function AdvSearch({ navigation }) {
-    // valittujen itemien tägit
+    // Selected item tags
     const [currentTags, setCurrentTags] = useState([]);
-    // lista kaikille tageille
+    // List for all tags 
     const [allTags, setAllTags] = useState([]);
     const [activities, setActivities] = useState([]);
-    //Lista valituista tägeistä
+    // List of selected tags
     const [selectedTags, setSelectedTags] = useState([]);
-    //String state jonka voi laittaa urlin sisään
+    // String inside the dataFetch url
     const [fetchString, setFetchString] = useState('');
-    //const [defaultFetch, setDefaultFetch] = useState(true);
-
     const getImages = (images) => images.map(image => image.url);
-    //Haetaan lista aktiviteeteista ja tagseista
+    // Get list of activities and tags
     let array = Object.values(allTags);
 
-    //haku joka muokkaantuu käytön mukaan
     const dataFetch = () => {
         let url = `http://open-api.myhelsinki.fi/v1/activities/?${fetchString}language_filter=fi&limit=20`
 
@@ -46,28 +36,27 @@ export default function AdvSearch({ navigation }) {
                 Alert.alert('Something went wrong', error);
             })
     }
-    //useEffect joka luo filtteri lauseen kun käyttäjä muuttaa tägi valintojaan
+    //useEffect filter that changes when user selects new tags
     useEffect(() => {
         createFilterTagsString();
     }, [selectedTags]);
 
-    //useEffect suorittaa uuden haun kun filtteri lause on valmis
+    //useEffect for new filter
     useEffect(() => {
         dataFetch();
     }, [fetchString]);
 
     const createFilterTagsString = () => {
         let str = ('tags_search=');
-        // Käydään läpi valitut tägit ja tehdään niistä urliin sopiva stringi
+        // For loop of selected tags and creating string to url
         if (selectedTags.length > 0) {
             for (let i = 0; i < selectedTags.length; i++) {
-                //Yhden tägin & merkki rikkoi haun, joten tarkistetaan onko tägillä sitä merkkiä ja korvataan
-
+                
                 if (selectedTags[i + 1]) {
-                    //Jos tägin jälkeen on tägi
+                    //If after a tag comes a tag
                     str = str.concat(selectedTags[i].replace("&", "%26").replace(/\s+/g, "%20") + "%2C")
                 } else {
-                    //jos on viimeinen tägi
+                    //If a tag is the last one 
                     str = str.concat(selectedTags[i].replace("&", "%26").replace(/\s+/g, "%20") + '&')
                 }
                 setFetchString(str)
@@ -78,7 +67,6 @@ export default function AdvSearch({ navigation }) {
         }
     }
 
-    //Voisimme siirtyä React elements listaan
     const listSeparator = () => {
         return (
             <View style={{
@@ -91,7 +79,7 @@ export default function AdvSearch({ navigation }) {
         )
     }
 
-    //Haetaan aktiviteetin koordinaatit
+    //Get the coordinates of activity 
     const getCoordinates = () => {
         fetch(`http://open-api.myhelsinki.fi/v1/activities/${item.location}`)
             .then(response => response.json())
@@ -107,7 +95,7 @@ export default function AdvSearch({ navigation }) {
             })
     }
 
-    //Muuta käyttäjän tägi valintoja
+    //Change users selection of tags
     const checkAnFetch = (newValue, tag) => {
         if (newValue === true) {
             setSelectedTags([...selectedTags, tag])
@@ -116,8 +104,6 @@ export default function AdvSearch({ navigation }) {
         }
     }
 
-
-    //Tarkoitus käyttää useammassa listassa, onko mahdollista? Pitäisikö renderitemit siirtää?
     const renderItem = ({ item }) => (
         <View style={{ flexDirection: 'row' }}>
             
@@ -127,7 +113,7 @@ export default function AdvSearch({ navigation }) {
                     selectedTags.indexOf(item) >= 0
                 }
                 onValueChange={(newValue) => { checkAnFetch(newValue, item) }}
-            //jos oncheck value on true, lisää listaan
+            //If oncheck value is true, add to list
             />
             <Text style={{width:80}}>{item}</Text>
         </View>
@@ -139,7 +125,7 @@ export default function AdvSearch({ navigation }) {
         <View style={styles.screen}>
 
             <View style={styles.smallcontainer}>
-                {/**lista josta voi checkata tägejä */}
+
                 <FlatList data={array}
                     keyExtractor={(item, index) => index.toString()}
                     ItemSeparatorComponent={listSeparator}

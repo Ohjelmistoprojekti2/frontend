@@ -4,15 +4,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Mainpage from './pages/Mainpage';
 import AdvSearch from'./pages/AdvSearch';
 import { Ionicons} from '@expo/vector-icons'
-import Fiddlin from'./pages/Playground';
-
-//npm install @react-navigation/bottom-tabs
+//import Fiddlin from'./pages/Playground';
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
 
-  //
   return (
     
     <NavigationContainer>
