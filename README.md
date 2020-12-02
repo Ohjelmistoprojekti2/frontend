@@ -23,6 +23,42 @@ Installations needed
    ```sh
    npm install
    ```
+3. Install Expo
+    ```sh
+    npm install --global expo-cli
+    ```
+4. Install React Native
+    ```sh
+    npm i react-native
+    ```
+5. Install React Native Elements
+    ```sh
+    npm install react-native-elements
+    ```
+6. Install React Native checkbox
+    ```sh
+    expo install @react-native-community/checkbox
+    ```
+7. Install React Native image box
+    ```sh
+    npm install i react-native-image-box
+    ```
+8. Install React Native base
+    ```sh
+    npm i native-base
+    ```
+9. Install React Native maps
+    ```sh
+    npm i react-native-maps
+    ```
+10. Install React Native navigation
+    ```sh
+    npm i react-navigation
+    ```
+11. Install React Native bottom tabs
+    ```sh
+    npm install @react-navigation/bottom-tabs
+    ```
 ## Usage
 
 ## Contact
