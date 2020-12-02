@@ -60,6 +60,11 @@ Installations needed
     npm install @react-navigation/bottom-tabs
     ```
 ## Usage
+How to create a React Native checkbox
+* React Native checkbox
+  ```sh
+  Example here
+  ```
 
 ## Contact
 * []() [Kristian Law](https://github.com/kristianlaw)
