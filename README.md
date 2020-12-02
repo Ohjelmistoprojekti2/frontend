@@ -1,5 +1,9 @@
 # Vhattodo
 
+## Built with
+* []() React Native
+* []() 
+* []()
 ## Getting started
 
 ### Prerequisites
