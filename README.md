@@ -1,7 +1,7 @@
 # Vhattodo
 
 ## About Vhattodo
-This project was part of a school course. The idea was to create an app that utilizes MyHelsinki Open API to make it easy to find events in Helsinki.
+This project was part of a school course. The idea was to create an app that utilizes MyHelsinki Open API to make it easy to find activities in Helsinki.
 ## Built with
 * []() React Native
 * []() [MyHelsinki Open API](http://open-api.myhelsinki.fi/)
