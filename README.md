@@ -24,7 +24,7 @@ Installations needed
 ## Usage
 
 ## Contact
-[Kristian Law](https://github.com/kristianlaw)
-[Niina Blom](https://github.com/niinab)
-[Joni Miettinen](https://github.com/Jonnemanni)
-[Niko Hautala](https://github.com/Epoggi)
+* []() [Kristian Law](https://github.com/kristianlaw)
+* []() [Niina Blom](https://github.com/niinab)
+* []() [Joni Miettinen](https://github.com/Jonnemanni)
+* []() [Niko Hautala](https://github.com/Epoggi)
