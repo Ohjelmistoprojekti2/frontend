@@ -1,149 +1,142 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, Alert, RecyclerViewBackedScrollViewComponent } from 'react-native';
-//expo install @react-native-community/checkbox
-import CheckBox from '@react-native-community/checkbox';
-import { styles }  from '../styles/stylesPlayground';
+import { Text, View, Alert, FlatList, TextInput, Linking, Image} from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
+import { Header, Input, Button, Card } from 'react-native-elements';
+import { styles }  from '../styles/stylesMainpage';
 
-/** ToDoList
- * DONE: MIKSI CHECKBOXIA EI VOI UNCHECKATA
- * Mitä kaikkea voi refaktoroida erillisiksi elementeiksi?
- * Tyylit omaan tiedostoon ja funktiot?
- * Voidaanko yhdistää funktioita? yksi urli ja yksi muuttuva haku?
- * Sama ilman buttoneita, miten? Epäilen async await toiminnolla.
- *
- * Bugs: Jos hakee useampaa tägiä, myhelsinki api palauttaa vain ensimmäisen tägin löydöt
- * Returns items with ANY of the tags listed. Separate tags with a comma.
- * ?tags_search=sauna%2C%20bar palauttaa listan jossa on vain sauna aktiviteetteja
- *
- * Bugs: Jos yrittää hakea aktiviteettia joka sisältää useamman tägin
- * ?tags_filter= Ei helsinkiApi palauta yhtään tulosta.
- */
+// npm install --save react-native-image-slider import ImageSlider from 'react-native-image-slider';
+//npm install i react-native-image-box
+import {SliderBox} from 'react-native-image-slider-box';
 
 export default function Fiddlin({ navigation }) {
-
-    const [currentTags, setCurrentTags] = useState([]);
-    const [allTags, setAllTags] = useState([]);
     const [activities, setActivities] = useState([]);
-    //Lista valituista tägeistä
-    const [selectedTags, setSelectedTags] = useState([]);
-    //String state jonka voi laittaa urlin sisään
-    const [fetchString, setFetchString] = useState('');
-    const [defaultFetch, setDefaultFetch] = useState(true);
-    let url = `http://open-api.myhelsinki.fi/v1/activities/?${fetchString}language_filter=fi&limit=20`
-    //Haetaan lista aktiviteeteista ja tagseista
-    let array = Object.values(currentTags);
-    //Staattisia elementtejä koska...?
-    let tags = selectedTags;
-    let fetchString2 = fetchString;
+    const [allTags, setAllTags] = useState([]);
+    const [note, setNote] = useState('Tapahtumat');
+    const [region, setRegion] = useState({});
 
-        //default haku
-        const dataFetch = () => {
-            //async?
-            //Jos default haku, tyhjennä fetch, jos tägi haku, suorita normaalisti
-        /*  */   if (defaultFetch === true) {
-               setFetchString('')
-            }
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    setActivities(data.data);
-                    setCurrentTags(data.tags);
-                })
-                .catch((error) => {
-                    Alert.alert('Something went wrong', error);
-                })
+  /*   const getImages = (images) => {
+        //Noukitaan urlit imageihin
+        let imageArray;
+        for (let i = 0; i < images.length; i++){
+           imageArray = imageArray.push(images[i].url)
         }
-        //Koetan sulauttaa yhdeksi dataFetch hauksi -Niko
-        //Haku jolla haetaan tägit
-        const uusiHaku = () => {
-            fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                setActivities(data.data);
-                setCurrentTags(data.tags);
-            })
-            .catch((error) => {
-                Alert.alert('Something went wrong', error);
-            })
-        }
-
+        return imageArray
+    } */
+    const getImages = (images) => images.map(image => image.url);
+  /**
+   * <ImageSlider images={['http://image.com','http://image.com','http://image.com',]}
+   */
+  const testImages = [
+    'https://placeimg.com/640/640/nature',
+    'https://placeimg.com/640/640/people',
+    'https://placeimg.com/640/640/animals',
+    'https://placeimg.com/640/640/beer',
+  ];
+  
+  //Haetaan lista aktiviteeteista ja tagseista
     useEffect(() => {
-        dataFetch()
-        setAllTags(currentTags)
+      defaultList()
     }, []);
-
-   const getActsWithTags = () => {
-        let str = ('tags_search=');
-       // Käydään läpi valitut tägit ja tehdään niistä urliin sopiva stringi
-            for (let i = 0; i < selectedTags.length; i++){
-                //Yhden tägin & merkki rikkoi haun, joten tarkistetaan onko tägillä sitä merkkiä ja korvataan
-                selectedTags[i] = selectedTags[i].replace("&", "%26")
-                if (selectedTags[i+1]){
-                    //Jos tägin jälkeen on tägi
-                str = str.concat(selectedTags[i] + "%2C%20")
-            }   else {
-                //jos on viimeinen tägi
-                str=str.concat(selectedTags[i]+'&')
-            }
-            setFetchString(str)
-        }
+  
+  //default haku
+  const defaultList = () => {
+      fetch(`http://open-api.myhelsinki.fi/v1/activities/?language_filter=fi&limit=20`)
+        .then(response => response.json())
+        .then(data => {
+          setActivities(data.data);
+          setAllTags(data.tags);
+        })
+        .catch((error) => {
+          Alert.alert('Something went wrong', error);
+    })
+  }
+  
+    //Haetaan aktiviteetin koordinaatit
+  const getCoordinates = () => {
+      fetch(`http://open-api.myhelsinki.fi/v1/activities/${item.location}`)
+        .then(response => response.json())
+        .then((data) => {
+          const lat = data.location.lat;
+          const lng = data.location.lon;
+          setRegion({
+                 latitude:lat,
+                 longitude: lng,
+                 latitudeDelta: 0.0322,
+                 longitudeDelta: 0.0221
+         });
+      })
     }
-
-
-
-
-//Voisimme siirtyä React elements listaan
-    const listSeparator = () => {
-        return (
-            <View style={{
-                height: 1,
-                width: "90%",
-                backgroundColor: "#CED0CE",
-                marginLeft: "10%"
-            }}
-            />
-        )
-    }
-    const checkList = () => {
-        //Checkboxin onValueChangiin funktio joka sisältää olemassa olevan koodin
-        // riviltä 106-114, sekä sulautettu getActsWithTags ja reaktiivinen fetch
-        //setDefaultFetch=false
-    }
-
-//Tarkoitus käyttää useammassa listassa, onko mahdollista? Pitäisikö renderitemit siirtää?
-    const renderItem = ({ item }) => (
-        <View style={{ flexDirection: 'row' }}>
-            <Text>{item}</Text>
-            <CheckBox
-                disabled={false}
-                value={
-                    selectedTags.indexOf(item) >= 0
-                }
-                onValueChange={(newValue) => {
-                    //jos oncheck value on true, lisää listaan
-                    if (newValue === true) {
-                        setSelectedTags([...selectedTags, item])
-                        //jos ei, poista listasta, tämän voisi muuttaa ehkä muotoon else{}
-                    } else if (newValue === false) {
-                        setSelectedTags(selectedTags.filter((current)=> current !== item))
-                    }
-                }}
-            />
-
-        </View>
-    )
+  
+  const listSeparator = () => {
+          return (
+              <View style={{
+                  height: 1,
+                  width: "90%",
+                  backgroundColor: "#CED0CE",
+                  marginLeft: "10%"
+              }}
+              />
+          )} 
+    
     return (
-
-        <View style={styles.screen}>
-            <View style={styles.smallcontainer}>
-                {/**testi elementti alapuoella */}
+        <View style={styles.mainContainer}>
+                      
+        <View style={styles.listcontainer}>
+        <Text style={{textAlign: 'center', fontSize:15, padding: 5, fontWeight:'bold' }}>{note}</Text>
+        <FlatList
+        style={{marginLeft: "0%", height:150}}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+        <Card>
+        <Card.Title>{item.name.fi}</Card.Title>
+        <Card.Divider/>
+          <Text style={{marginBottom: 10}} onPress={getCoordinates}>Osoite: {item.location.address.street_address}</Text>
+          <Text style={{marginBottom: 10}}>{item.where_when_duration.where_and_when}</Text>
+          <Text style={{marginBottom: 10, color:'#130DDE'}}onPress={() => {Linking.openURL(item.info_url)}}>Klikkaa tästä tapahtuman nettisivuille</Text>
+            <SliderBox
+            resizeMethod={'resize'}
+            resizeMode={'cover'}
+            parentWidth={310}
+            paginationBoxVerticalPadding={20}
+            autoplay
+            circleLoop
+            images={getImages(item.description.images)}/>
+          </Card>
+            )}
+        ItemSeparatorComponent={listSeparator} data={activities} />
+      
+      </View> 
+  {/*Karttanäkymä ja Markeri karttaan, palauttaa Kampin osoitteen*/}
+        <View style={styles.mapcontainer} >
+          <MapView
+            style={styles.map}
+            region={{
+              latitude: 60.167389,
+              longitude: 24.931080,
+              latitudeDelta: 0.0322,
+              longitudeDelta: 0.0221
+            }}
+            onRegionChange={setRegion}>
+  
+            <Marker
+              coordinate={{
+                latitude: 60.167389,
+                longitude: 24.931080
+              }}
+              title='Kamppi' />
+          </MapView>
+        </View>
+      </View>
+    );
+  }
+  
+/*         {/**testi elementti alapuoella }
                 <Text>{fetchString}</Text>
                 <View style={styles.row}>
-                <Button title="GetItMf" onPress={uusiHaku} />
-                <Button title="Default" onPress={dataFetch}/>
+                    <Button title="Haku" onPress={dataFetch} />
                 </View>
-                {/**lista johon tulee checkatut tägit */}
+                {/**lista johon tulee checkatut tägit }
                 <Text style={styles.basicTexts}>Chosen Tags</Text>
                 <FlatList data={selectedTags}
                     keyExtractor={(item, index) => index.toString()}
@@ -159,18 +152,9 @@ export default function Fiddlin({ navigation }) {
             </View>
 
             <View style={styles.smallcontainer}>
-                {/**lista josta voi checkata tägejä */}
-                <Button title='GetActsWithTags' onPress={getActsWithTags}/>
+                {/**lista josta voi checkata tägejä }
+                <Button title='GetActsWithTags' onPress={getActsWithTags} />
                 <FlatList data={array}
                     keyExtractor={(item, index) => index.toString()}
                     ItemSeparatorComponent={listSeparator}
-                    renderItem={renderItem} />
-            </View>
-
-        </View>
-
-    );
-}
-/**
- * Siirretään tyylit omaan tiedostoon
-*/
+                    renderItem={renderItem} /> */
