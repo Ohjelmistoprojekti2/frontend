@@ -63,7 +63,72 @@ Installations needed
 How to create a React Native checkbox
 * React Native checkbox
   ```sh
-  Example here
+  import CheckBox from '@react-native-community/checkbox';
+  
+<CheckBox
+      disabled={false}
+      value={ selectedTags.indexOf(item) >= 0 }
+      
+  //If oncheck value is true, add to list
+  onValueChange={(newValue) => { tagOnListOrNot(newValue, item) }}
+ />
+ 
+   const tagOnListOrNot = (newValue, tag) => {
+        if (newValue === true) {
+            setSelectedTags([...selectedTags, tag])
+        } else {
+            setSelectedTags(selectedTags.filter((current) => current !== tag))
+        }
+    }
+  ```
+  How to have list refresh with each tag selection
+  ```sh
+   //useEffect filter that changes when user selects new tags
+    useEffect(() => {
+        createFilterTagsString();
+    }, [selectedTags]);
+
+    //useEffect for new filter
+    useEffect(() => {
+        dataFetch();
+    }, [fetchString]);
+    
+        const createFilterTagsString = () => {
+        let str = ('tags_search=');
+        // For loop of selected tags and creating string to url
+        if (selectedTags.length > 0) {
+            for (let i = 0; i < selectedTags.length; i++) {
+                
+                if (selectedTags[i + 1]) {
+                    //If after a tag comes a tag
+                    str = str.concat(selectedTags[i].replace("&", "%26").replace(/\s+/g, "%20") + "%2C")
+                } else {
+                    //If a tag is the last one 
+                    str = str.concat(selectedTags[i].replace("&", "%26").replace(/\s+/g, "%20") + '&')
+                }
+                setFetchString(str)
+            }
+        }
+        else {
+            setFetchString('')
+        }
+    }
+    const dataFetch = () => {
+        let url = `http://open-api.myhelsinki.fi/v1/activities/?${fetchString}language_filter=fi&limit=20`
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                setActivities(data.data);
+                setCurrentTags(data.tags);
+                if (allTags.length === 0) {
+                    setAllTags(data.tags)
+                }
+            })
+            .catch((error) => {
+                Alert.alert('Something went wrong', error);
+            })
+    }
   ```
 
 ## Contact
