@@ -62,25 +62,26 @@ Installations needed
 ## Usage
 How to create a React Native checkbox
 * React Native checkbox
-```sh
+    ```sh
   import CheckBox from '@react-native-community/checkbox';
   
-<CheckBox
+  <CheckBox
       disabled={false}
       value={ selectedTags.indexOf(item) >= 0 }
       
-  //If oncheck value is true, add to list
-  onValueChange={(newValue) => { tagOnListOrNot(newValue, item) }}
- />
+     //If oncheck value is true, add to list
+       onValueChange={(newValue) => { tagOnListOrNot(newValue, item) }}
+    />
  
-   const tagOnListOrNot = (newValue, tag) => {
+    const tagOnListOrNot = (newValue, tag) => {
         if (newValue === true) {
             setSelectedTags([...selectedTags, tag])
         } else {
             setSelectedTags(selectedTags.filter((current) => current !== tag))
         }
     }
-  ```
+    ```
+    
  * How to have list refresh with each tag selection
   
    ```sh
