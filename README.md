@@ -62,7 +62,7 @@ Installations needed
 ## Usage
 How to create a React Native checkbox
 * React Native checkbox
- ```sh
+```sh
   import CheckBox from '@react-native-community/checkbox';
   
 <CheckBox
@@ -80,8 +80,8 @@ How to create a React Native checkbox
             setSelectedTags(selectedTags.filter((current) => current !== tag))
         }
     }
-    ```
- How to have list refresh with each tag selection
+  ```
+ * How to have list refresh with each tag selection
   
    ```sh
    //useEffect filter that changes when user selects new tags
